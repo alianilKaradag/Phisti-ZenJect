@@ -16,10 +16,7 @@ namespace Zenject.Asteroids
         readonly ShipStateMoving.Factory _movingFactory;
         readonly ShipStateDead.Factory _deadFactory;
 
-        public ShipStateFactory(
-            ShipStateDead.Factory deadFactory,
-            ShipStateMoving.Factory movingFactory,
-            ShipStateWaitingToStart.Factory  waitingFactory)
+        public ShipStateFactory(ShipStateDead.Factory deadFactory,ShipStateMoving.Factory movingFactory,ShipStateWaitingToStart.Factory  waitingFactory)
         {
             _waitingFactory = waitingFactory;
             _movingFactory = movingFactory;

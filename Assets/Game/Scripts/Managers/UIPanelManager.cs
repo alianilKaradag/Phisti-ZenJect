@@ -3,18 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
-public interface IUIPanelManager
+public class UIPanelManager : MonoBehaviour
 {
-    public void Init();
-}
-
-public class UIPanelManager : MonoBehaviour, IUIPanelManager
-{
-    private IGameManager gameManager;
+    private GameManager gameManager;
     [SerializeField] private List<UIPanelBase> panels;
 
     [Inject]
-    public void Construct(IGameManager gameManager)
+    public void Construct(GameManager gameManager)
     {
         this.gameManager = gameManager;
     }

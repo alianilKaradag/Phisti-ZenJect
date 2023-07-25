@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class ConfirmationPopUp : Singleton<ConfirmationPopUp>
+public class ConfirmationPopUp : MonoBehaviour
 {
     public Action<bool> OnClickedConfirmationButton;
     

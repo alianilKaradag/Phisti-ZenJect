@@ -59,6 +59,7 @@ namespace Zenject.Asteroids
         public void Start()
         {
             ChangeState(ShipStates.WaitingToStart);
+            
         }
 
         public void Update()

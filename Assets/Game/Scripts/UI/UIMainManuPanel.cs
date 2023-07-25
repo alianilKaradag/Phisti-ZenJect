@@ -4,8 +4,13 @@ using Zenject;
 
 public class UIMainManuPanel : UIPanelBase
 {
-    [Inject] private IGameManager gameManager;
-    
+     private GameManager gameManager;
+
+     [Inject]
+    public void Construct(GameManager gameManager)
+    {
+        this.gameManager = gameManager;
+    }
     public void OnTapToPlayClicked()
     {
         gameManager.GameplayStarted();

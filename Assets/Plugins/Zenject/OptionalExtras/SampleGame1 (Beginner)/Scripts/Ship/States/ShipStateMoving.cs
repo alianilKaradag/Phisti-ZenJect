@@ -13,10 +13,7 @@ namespace Zenject.Asteroids
         Vector3 _lastPosition;
         float _oscillationTheta;
 
-        public ShipStateMoving(
-            Settings settings, Ship ship,
-            [Inject(Id = "Main")]
-            Camera mainCamera)
+        public ShipStateMoving(Settings settings, Ship ship,[Inject(Id = "Main")]Camera mainCamera)
         {
             _ship = ship;
             _settings = settings;

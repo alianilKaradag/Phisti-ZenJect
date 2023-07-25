@@ -2,25 +2,33 @@
 using UnityEngine;
 using Cinemachine;
 using DG.Tweening;
+using Zenject;
 
 public enum CameraType
 {
     Intro,Gameplay
 }
 
-public class CameraManager : Singleton<CameraManager>
+public class CameraManager : MonoBehaviour
 {
     public Camera MainCamera => mainCamera;
    
-    [SerializeField] private Camera mainCamera;
     [SerializeField] private CameraType defaultCamera;
     [SerializeField] private CinemachineVirtualCamera[] cameras;
+    [Inject(Id = "Main")] private Camera mainCamera;
 
-    public CinemachineVirtualCamera CurrentCamera { get; set; }
+    public CinemachineVirtualCamera CurrentCamera { get; private set; }
 
     private CameraType currentCameraType,previousCamera;
     private CinemachineBasicMultiChannelPerlin currentShake;
 
+    
+    [Inject]
+    public void Construct([Inject(Id = "Main")] Camera mainCamera)
+    {
+        this.mainCamera = mainCamera;
+    }
+    
     private void Start()
     {
         previousCamera = defaultCamera;
@@ -48,28 +56,12 @@ public class CameraManager : Singleton<CameraManager>
             }
         }
     }
-    public void OpenPreviousCamera() => ChangeCamera(previousCamera);
     
     public void ChangeCamera(CameraType cam)
     {
-        previousCamera = Instance.currentCameraType;
+        previousCamera = currentCameraType;
         currentCameraType = cam;
         UpdateCurrentCamera();
-    }
-
-    public void Shake(float time, float intensity)
-    {
-        if (currentShake == null) return;
-        
-        var shakeId = "CameraShake";
-        DOTween.Kill(shakeId);
-
-        var amplitude = 0.2f * intensity;
-        currentShake.m_AmplitudeGain = amplitude;
-
-        DOTween.To(o => currentShake.m_AmplitudeGain = o, amplitude, 0f, time)
-            .SetId(shakeId)
-            .SetEase(Ease.Linear);
     }
 
     private void BackToLobby()

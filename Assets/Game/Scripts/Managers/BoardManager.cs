@@ -2,31 +2,16 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using DG.Tweening;
 using NaughtyAttributes;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using Zenject;
 
-public interface IBoardManager
+public class BoardManager : MonoBehaviour
 {
-    public void AddPlayedCard(CardValue card);
-    public Transform GetThrowPoint(out float yPos);public interface IGameManager
-    {
-        public UnityAction<GameState> OnGameStateChanged { get; set;}
-        public void GameplayStarted();
-    }
+    public UnityAction<GameState> OnGameStateChanged { get; set; }
 
-    public void AddUser(CharacterController character);
-    
-    public bool IsDealingCards { get; }
-    public bool IsGameCompleted { get; }
-    
-    public List<CardValue> PlayedCards { get; }
-    
-}
-public class BoardManager : MonoBehaviour, IBoardManager
-{
     public static UnityAction<Card, CharacterController> OnACardPlayed;
     public List<CardValue> PlayedCards { get; private set; } = new List<CardValue>();
 
@@ -46,6 +31,10 @@ public class BoardManager : MonoBehaviour, IBoardManager
     private CharacterController currentUser => users[turnIndex];
     private CharacterController lastCardGainedUser;
     private TableData tableData;
+    private CharacterManager characterManager;
+    private ScoreManager scoreManager;
+    private GameCompletePopUp gameCompletePopUp;
+    private OptionsMenu optionsMenu;
 
     private bool isDeckOver;
     private bool isPlayerOnTheBoard;
@@ -56,6 +45,15 @@ public class BoardManager : MonoBehaviour, IBoardManager
 
     private Coroutine dealRoutine;
 
+    [Inject]
+    public void Construct(CharacterManager characterManager, ScoreManager scoreManager, GameCompletePopUp gameCompletePopUp, OptionsMenu optionsMenu)
+    {
+        this.characterManager = characterManager;
+        this.scoreManager = scoreManager;
+        this.gameCompletePopUp = gameCompletePopUp;
+        this.optionsMenu = optionsMenu;
+    }
+    
     private void Start()
     {
         SaloonManager.OnJoinedTable += PlayerJoinedTable;
@@ -71,7 +69,7 @@ public class BoardManager : MonoBehaviour, IBoardManager
         OptionsMenu.OnBackToLobbyChoosed -= BackToLobby;
         OptionsMenu.OnNewGameChoosed -= StartNewGame;
     }
-
+    
     public void AddUser(CharacterController character)
     {
         users.Add(character);
@@ -293,6 +291,7 @@ public class BoardManager : MonoBehaviour, IBoardManager
         return cardThrowPoint;
     }
 
+
     public void AddPlayedCard(CardValue card)
     {
         PlayedCards.Add(card);
@@ -306,7 +305,7 @@ public class BoardManager : MonoBehaviour, IBoardManager
 
     private void DetectWinner()
     {
-        var winner = ScoreManager.Instance.GetWinner(users);
+        var winner = scoreManager.GetWinner(users);
 
         foreach (var user in users)
         {
@@ -318,7 +317,7 @@ public class BoardManager : MonoBehaviour, IBoardManager
 
     private IEnumerator CallGameCompletePopUp(CharacterController winner)
     {
-        var didPlayerWin = winner == CharacterManager.Instance.Player;
+        var didPlayerWin = winner == characterManager.Player;
         
         if (didPlayerWin)
         {
@@ -327,14 +326,14 @@ public class BoardManager : MonoBehaviour, IBoardManager
         
         yield return new WaitForSeconds(1f);
 
-        GameCompletePopUp.Instance.SetValues(winner.UserData.UserName, tableData.BetAmount, didPlayerWin);
-        GameCompletePopUp.Instance.Open();
+        gameCompletePopUp.SetValues(winner.UserData.UserName, tableData.BetAmount, didPlayerWin);
+        gameCompletePopUp.Open();
 
         yield return new WaitForSeconds(3f);
 
-        if (!OptionsMenu.Instance.IsOpen)
+        if (!optionsMenu.IsOpen)
         {
-            OptionsMenu.Instance.Show();
+            optionsMenu.Show();
         }
     }
 
@@ -362,7 +361,7 @@ public class BoardManager : MonoBehaviour, IBoardManager
     {
         if (!IsGameCompleted)
         {
-            CharacterManager.Instance.Player.GameCompleted(null, tableData.BetAmount,  tableData.SaloonSize);
+            characterManager.Player.GameCompleted(null, tableData.BetAmount,  tableData.SaloonSize);
         }
         
         ResetBoard();
@@ -373,7 +372,7 @@ public class BoardManager : MonoBehaviour, IBoardManager
     {
         if (!IsGameCompleted)
         {
-            CharacterManager.Instance.Player.GameCompleted(null, tableData.BetAmount, tableData.SaloonSize);
+            characterManager.Player.GameCompleted(null, tableData.BetAmount, tableData.SaloonSize);
         }
         
         ResetBoard();

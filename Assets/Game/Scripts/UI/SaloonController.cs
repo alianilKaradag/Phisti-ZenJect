@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
 
 public class SaloonController : MonoBehaviour
 {
@@ -13,9 +14,17 @@ public class SaloonController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI betText;
     [SerializeField] private Button playButton;
 
+    private DataManager dataManager;
+    private SaloonManager saloonManager;
     private int minBet;
     private int maxBet;
     
+    [Inject]
+    public void Construct(DataManager dataManager, SaloonManager saloonManager)
+    {
+        this.dataManager = dataManager;
+        this.saloonManager = saloonManager;
+    }
     private void Awake()
     {
         SetValues();
@@ -33,7 +42,7 @@ public class SaloonController : MonoBehaviour
 
     private void CheckMoneyForTable()
     {
-        if (DataManager.Instance.PlayerData.PlayerTotalMoney < minBet)
+        if (dataManager.PlayerData.PlayerTotalMoney < minBet)
         {
             playButton.interactable = false;
         }
@@ -41,7 +50,7 @@ public class SaloonController : MonoBehaviour
 
     private void SetValues()
     {
-        var values = SaloonManager.Instance.GetSaloonValues(saloonType);
+        var values = saloonManager.GetSaloonValues(saloonType);
         minBet = values[0];
         maxBet = values[1];
         var finalMinText = Helper.ConvertBigValue(minBet);

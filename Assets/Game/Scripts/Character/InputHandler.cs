@@ -8,10 +8,10 @@ public class InputHandler : MonoBehaviour
 {
    [SerializeField] private CharacterController characterController;
 
-   private IBoardManager boardManager;
+   private BoardManager boardManager;
 
    [Inject]
-   public void Construct(IBoardManager boardManager)
+   public void Construct(BoardManager boardManager)
    {
       this.boardManager = boardManager;
    }

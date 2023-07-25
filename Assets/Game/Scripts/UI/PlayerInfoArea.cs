@@ -4,18 +4,26 @@ using System.Collections.Generic;
 using DG.Tweening;
 using NaughtyAttributes;
 using UnityEngine;
+using Zenject;
 
-public class PlayerInfoArea : Singleton<PlayerInfoArea>
+public class PlayerInfoArea : MonoBehaviour
 {
     [SerializeField] private UserInfo userInfo;
     [SerializeField, Foldout("Settings")] private float appearDuration = 0.2f;
     [SerializeField, Foldout("Settings")] private float disappearDuration = 0.2f;
     [SerializeField, Foldout("Setup")] private CanvasGroup canvasGroup;
 
+    private DataManager dataManager;
     private Tween fadeTween;
     private UserInfoData data;
 
     private bool isOpen = true;
+
+    [Inject]
+    public void Construct(DataManager dataManager)
+    {
+        this.dataManager = dataManager;
+    }
     
     private void Start()
     {
@@ -52,7 +60,7 @@ public class PlayerInfoArea : Singleton<PlayerInfoArea>
 
     public void UpdateData()
     {
-        var playerData = DataManager.Instance.PlayerData;
+        var playerData = dataManager.PlayerData;
         data = new UserInfoData("Player", playerData.WinAmount, playerData.LostAmount, playerData.PlayerTotalMoney);
         userInfo.SetData(data);
     }

@@ -95,8 +95,7 @@ namespace Zenject.Asteroids
         {
             Container.Bind<ShipStateFactory>().AsSingle();
 
-            // Note that the ship itself is bound using a ZenjectBinding component (see Ship
-            // game object in scene heirarchy)
+            // Note that the ship itself is bound using a ZenjectBinding component (see Ship game object in scene heirarchy)
 
             Container.BindFactory<ShipStateWaitingToStart, ShipStateWaitingToStart.Factory>().WhenInjectedInto<ShipStateFactory>();
             Container.BindFactory<ShipStateDead, ShipStateDead.Factory>().WhenInjectedInto<ShipStateFactory>();

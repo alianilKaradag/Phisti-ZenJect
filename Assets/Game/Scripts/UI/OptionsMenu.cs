@@ -9,7 +9,7 @@ using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Zenject;
 
-public class OptionsMenu : Singleton<OptionsMenu>
+public class OptionsMenu : MonoBehaviour
 {
     private enum OptionType
     {
@@ -26,21 +26,23 @@ public class OptionsMenu : Singleton<OptionsMenu>
 
     private Tween moveTween;
     private OptionType optionType;
-    private IBoardManager boardManager;
+    private BoardManager boardManager;
+    private ConfirmationPopUp confirmationPopUp;
 
     private const float contentsVisibleLocalXPos = -260;
     private const float contentsUnvisibleLocalXPos = 640;
 
     [Inject]
-    public void Construct(IBoardManager boardManager)
+    public void Construct(BoardManager boardManager, ConfirmationPopUp confirmationPopUp)
     {
         this.boardManager = boardManager;
+        this.confirmationPopUp = confirmationPopUp;
     }
     
     private void Start()
     {
         contents.gameObject.SetActive(false);
-        ConfirmationPopUp.Instance.OnClickedConfirmationButton += ConfirmationButtonClicked;
+        confirmationPopUp.OnClickedConfirmationButton += ConfirmationButtonClicked;
     }
 
     public void SetOpenableStatus(bool canOpen)
@@ -93,7 +95,7 @@ public class OptionsMenu : Singleton<OptionsMenu>
 
         if (!boardManager.IsGameCompleted)
         {
-            ConfirmationPopUp.Instance.Open();
+            confirmationPopUp.Open();
             return;
         }
         
@@ -107,7 +109,7 @@ public class OptionsMenu : Singleton<OptionsMenu>
 
         if (!boardManager.IsGameCompleted)
         {
-            ConfirmationPopUp.Instance.Open();
+            confirmationPopUp.Open();
             return;
         }
         

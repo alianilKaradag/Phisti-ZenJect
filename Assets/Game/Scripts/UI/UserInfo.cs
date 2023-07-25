@@ -2,6 +2,7 @@ using DG.Tweening;
 using NaughtyAttributes;
 using TMPro;
 using UnityEngine;
+using Zenject;
 using Random = UnityEngine.Random;
 
 public class UserInfo : MonoBehaviour
@@ -11,7 +12,16 @@ public class UserInfo : MonoBehaviour
     [SerializeField, Foldout("Setup")] private TextMeshProUGUI userNameText;
     [SerializeField, Foldout("Setup")] private TextMeshProUGUI moneyText;
 
+    private DataManager dataManager;
     private UserInfoData userInfoData;
+    private UserProfilePopUp userProfilePopUp;
+    
+    [Inject]
+    public void Construct(DataManager dataManager, UserProfilePopUp userProfilePopUp)
+    {
+        this.dataManager = dataManager;
+        this.userProfilePopUp = userProfilePopUp;
+    }
 
     public void OnProfileClicked()
     {
@@ -19,7 +29,7 @@ public class UserInfo : MonoBehaviour
 
         if (isPlayerInfo)
         {
-            var playerData = DataManager.Instance.PlayerData;
+            var playerData = dataManager.PlayerData;
             data = new UserInfoData("Player", playerData.WinAmount, playerData.LostAmount, playerData.PlayerTotalMoney);
         }
         else
@@ -27,7 +37,7 @@ public class UserInfo : MonoBehaviour
             data = userInfoData;
         }
 
-        UserProfilePopUp.Instance.Open(data);
+        userProfilePopUp.Open(data);
     }
     
     public void SetData(UserInfoData userInfoData)

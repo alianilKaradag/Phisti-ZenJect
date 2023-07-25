@@ -5,7 +5,7 @@ using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class ScrollManager : Singleton<ScrollManager>
+public class ScrollManager : MonoBehaviour
 {
    public static UnityAction OnEnable;
    [SerializeField, Foldout("Settings")] private float appearDuration;

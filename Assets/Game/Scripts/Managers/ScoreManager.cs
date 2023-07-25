@@ -2,14 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Zenject;
 
-public class ScoreManager : Singleton<ScoreManager>
+
+public class ScoreManager
 {
+    private CharacterManager characterManager;
+    
+    [Inject]
+    public void Construct(CharacterManager characterManager)
+    {
+        this.characterManager = characterManager;
+    }
+    
     public CharacterController GetWinner(List<CharacterController> users)
     {
         var maxScore = 0;
         var userWhoHasMostCard = users.OrderByDescending( x=> x.GainedCards.Count).FirstOrDefault();
-        CharacterController winner = CharacterManager.Instance.Player;
+        CharacterController winner = characterManager.Player;
 
         foreach (var user in users)
         {

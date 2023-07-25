@@ -34,12 +34,18 @@ public class CharacterController : MonoBehaviour
 
     private UserInfoData userData;
     
-    private IBoardManager boardManager;
+    private BoardManager boardManager;
+    private CharacterManager characterManager;
+    private DataManager dataManager;
+    private PlayerInfoArea playerInfoArea;
 
     [Inject]
-    public void Construct(IBoardManager boardManager)
+    public void Construct(BoardManager boardManager, CharacterManager characterManager, DataManager dataManager, PlayerInfoArea playerInfoArea)
     {
         this.boardManager = boardManager;
+        this.characterManager = characterManager;
+        this.dataManager = dataManager;
+        this.playerInfoArea = playerInfoArea;
     }
 
     public void SetAsUser(bool isOpen)
@@ -52,7 +58,7 @@ public class CharacterController : MonoBehaviour
     {
         if (isPlayer)
         {
-            var playerData = DataManager.Instance.PlayerData;
+            var playerData = dataManager.PlayerData;
             userData = new UserInfoData("Player", playerData.WinAmount, playerData.LostAmount, playerData.PlayerTotalMoney);
         }
         else
@@ -65,7 +71,7 @@ public class CharacterController : MonoBehaviour
 
     private void SetRandomData()
     {
-        userData = CharacterManager.Instance.GetRandomData();
+        userData = characterManager.GetRandomData();
     }
 
     public void AddCard(Card card)
@@ -110,8 +116,8 @@ public class CharacterController : MonoBehaviour
         {
             if (isPlayer)
             {
-                DataManager.Instance.IncreaseWinAmount();
-                DataManager.Instance.UpdateMoney(betAmount * (saloonSize -1));
+                dataManager.IncreaseWinAmount();
+                dataManager.UpdateMoney(betAmount * (saloonSize -1));
                 //SaveData.WinAmount++;
                 //SaveData.PlayerTotalMoney += betAmount;
             }
@@ -123,8 +129,8 @@ public class CharacterController : MonoBehaviour
         {
             if (isPlayer)
             {
-                DataManager.Instance.IncreaseLostAmount();
-                DataManager.Instance.UpdateMoney(-betAmount);
+                dataManager.IncreaseLostAmount();
+                dataManager.UpdateMoney(-betAmount);
                 // SaveData.LostAmount++;
                 // SaveData.PlayerTotalMoney -= betAmount;
             }
@@ -135,7 +141,7 @@ public class CharacterController : MonoBehaviour
 
         userData = new UserInfoData(userData.UserName, winAmount, lostAmount, money);
         userInfo.SetData(userData);
-        PlayerInfoArea.Instance.UpdateData();
+        playerInfoArea.UpdateData();
     }
 
     public void Reset()

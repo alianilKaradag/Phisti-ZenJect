@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
 
-public class UserProfilePopUp : Singleton<UserProfilePopUp>
+public class UserProfilePopUp :MonoBehaviour
 {
     [SerializeField, Foldout("Settings")] private float appearDuration = 0.3f;
     [SerializeField, Foldout("Settings")] private float disappearDuration = 0.3f;

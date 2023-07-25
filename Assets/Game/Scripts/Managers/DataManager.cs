@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-public class DataManager : Singleton<DataManager>
+public class DataManager : MonoBehaviour
 {
     public PlayerData PlayerData => playerData;
     [SerializeField] private PlayerData playerData;
@@ -28,7 +28,8 @@ public class DataManager : Singleton<DataManager>
     {
         playerData.LostAmount++;
     }
-    
+
+#if UNITY_EDITOR
     private void SaveData()
     {
         var transferData = ScriptableObject.CreateInstance<PlayerData>();
@@ -46,4 +47,6 @@ public class DataManager : Singleton<DataManager>
         EditorUtility.FocusProjectWindow();
         Selection.activeObject = transferData;
     }
+#endif
+
 }

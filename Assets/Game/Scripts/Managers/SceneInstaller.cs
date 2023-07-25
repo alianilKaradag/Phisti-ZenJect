@@ -7,8 +7,20 @@ public class SceneInstaller : MonoInstaller<SceneInstaller>
 {
     public override void InstallBindings()
     {
-        Container.Bind<IGameManager>().To<GameManager>().FromComponentInHierarchy().AsSingle().NonLazy();
-        Container.Bind<IUIPanelManager>().To<UIPanelManager>().FromComponentInHierarchy().AsSingle().NonLazy();
-        Container.Bind<IBoardManager>().To<BoardManager>().FromComponentsInHierarchy().AsSingle().NonLazy();
+        Container.Bind<GameManager>().FromComponentInHierarchy().AsSingle();
+        Container.Bind<UIPanelManager>().FromComponentInHierarchy().AsSingle();
+        Container.Bind<BoardManager>().FromComponentsInHierarchy().AsSingle();
+        Container.Bind<CameraManager>().FromComponentsInHierarchy().AsSingle();
+        Container.Bind<CharacterManager>().FromComponentsInHierarchy().AsSingle();
+        Container.Bind<DataManager>().FromComponentsInHierarchy().AsSingle();
+        Container.Bind<SaloonCreator>().FromComponentsInHierarchy().AsSingle();
+        Container.Bind<SaloonManager>().FromComponentsInHierarchy().AsSingle();
+        Container.Bind<ScoreManager>().AsSingle();
+        Container.Bind<ScrollManager>().FromComponentsInHierarchy().AsSingle();
+        Container.Bind<ConfirmationPopUp>().FromComponentsInHierarchy().AsSingle();
+        Container.Bind<GameCompletePopUp>().FromComponentsInHierarchy().AsSingle();
+        Container.Bind<OptionsMenu>().FromComponentsInHierarchy().AsSingle();
+        Container.Bind<PlayerInfoArea>().FromComponentsInHierarchy().AsSingle();
+        Container.Bind<UserProfilePopUp>().FromComponentsInHierarchy().AsSingle();
     }
 }

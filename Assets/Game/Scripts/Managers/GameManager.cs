@@ -9,21 +9,15 @@ public enum GameState
     Intro, MainMenu, Gameplay
 }
 
-public interface IGameManager
-{
-    public UnityAction<GameState> OnGameStateChanged { get; set;}
-    public void GameplayStarted();
-}
-
-public class GameManager : MonoBehaviour, IGameManager
+public class GameManager : MonoBehaviour
 {
     public UnityAction<GameState> OnGameStateChanged { get; set; }
     private GameState currentState;
-    private IUIPanelManager uiPanelManager;
+    private UIPanelManager uiPanelManager;
     
 
     [Inject]
-    public void Construct(IUIPanelManager uiPanelManager)
+    public void Construct(UIPanelManager uiPanelManager)
     {
         this.uiPanelManager = uiPanelManager;
     }

@@ -6,8 +6,9 @@ using NaughtyAttributes;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
 
-public class SaloonCreator : Singleton<SaloonCreator>
+public class SaloonCreator : MonoBehaviour
 {
     [SerializeField, Foldout("Settings")] private float appearDuration = 0.5f;
     [SerializeField, Foldout("Settings")] private float disappearDuration = 0.5f;
@@ -27,7 +28,14 @@ public class SaloonCreator : Singleton<SaloonCreator>
     private int maxBet;
     private int currentBet;
     private bool isOpen;
-    private int playerTotalMoney => DataManager.Instance.PlayerData.PlayerTotalMoney;
+    private DataManager dataManager;
+    private int playerTotalMoney => dataManager == null ? 0 : dataManager.PlayerData.PlayerTotalMoney;
+
+    [Inject]
+    public void Construct(DataManager dataManager)
+    {
+        this.dataManager = dataManager;
+    }
 
     private void Awake()
     {

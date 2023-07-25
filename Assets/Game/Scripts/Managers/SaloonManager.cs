@@ -5,13 +5,14 @@ using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
+using Zenject;
 
 public enum SaloonType
 {
     NewBies, Rookies, Nobles
 }
 
-public class SaloonManager : Singleton<SaloonManager>
+public class SaloonManager : MonoBehaviour
 {
     public static UnityAction<TableData> OnJoinedTable;
     public static UnityAction<SaloonType, int, int> OnGameSaloonCreateSelected;
@@ -21,7 +22,22 @@ public class SaloonManager : Singleton<SaloonManager>
 
     private TableData tableData;
     private SaloonType currentSaloonType;
+    private CameraManager cameraManager;
+    private SaloonCreator saloonCreator;
+    private ScrollManager scrollManager;
+    private OptionsMenu optionsMenu;
+    private PlayerInfoArea playerInfoArea;
 
+    [Inject]
+    public void Construct(CameraManager cameraManager, SaloonCreator saloonCreator, ScrollManager scrollManager, OptionsMenu optionsMenu, PlayerInfoArea playerInfoArea)
+    {
+        this.cameraManager = cameraManager;
+        this.saloonCreator = saloonCreator;
+        this.scrollManager = scrollManager;
+        this.optionsMenu = optionsMenu;
+        this.playerInfoArea = playerInfoArea;
+    }
+    
     private void Awake()
     {
         OnGameSaloonCreateSelected += CreateSaloonSelected;
@@ -62,22 +78,22 @@ public class SaloonManager : Singleton<SaloonManager>
     private void CreateSaloonSelected(SaloonType saloonType, int minBet, int maxBet)
     {
         currentSaloonType = saloonType;
-        ScrollManager.Instance.Close();
-        SaloonCreator.Instance.OpenCreateTable(saloonType, minBet, maxBet);
+        scrollManager.Close();
+        saloonCreator.OpenCreateTable(saloonType, minBet, maxBet);
     }
 
     private void JoinedTable(TableData tableData)
     {
         this.tableData = tableData;
-        PlayerInfoArea.Instance.Close();
-        ScrollManager.Instance.Close();
-        CameraManager.Instance.ChangeCamera(CameraType.Gameplay);
-        OptionsMenu.Instance.SetOpenableStatus(true);
+        playerInfoArea.Close();
+        scrollManager.Close();
+        cameraManager.ChangeCamera(CameraType.Gameplay);
+        optionsMenu.SetOpenableStatus(true);
     }
 
     private void SaloonCreationCanceled()
     {
-        ScrollManager.Instance.Open();
-        PlayerInfoArea.Instance.Open();
+        scrollManager.Open();
+        playerInfoArea.Open();
     }
 }

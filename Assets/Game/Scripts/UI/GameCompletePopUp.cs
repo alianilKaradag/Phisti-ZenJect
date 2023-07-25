@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class GameCompletePopUp : Singleton<GameCompletePopUp>
+public class GameCompletePopUp : MonoBehaviour
 {
    [SerializeField, Foldout("Settings")] private float appearDuration = 0.4f;
    
