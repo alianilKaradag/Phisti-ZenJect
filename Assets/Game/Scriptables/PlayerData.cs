@@ -1,8 +1,9 @@
 using NaughtyAttributes;
 using UnityEngine;
+using Zenject;
 
 [CreateAssetMenu(fileName = "PlayerData", menuName = "Anil/PlayerData")]
-public class PlayerData : ScriptableObject
+public class PlayerData : ScriptableObjectInstaller<PlayerData>
 {
     public int WinAmount;
     public int LostAmount;
@@ -23,5 +24,10 @@ public class PlayerData : ScriptableObject
 
             playerTotalMoney = value;
         }
+    }
+
+    public override void InstallBindings()
+    {
+        Container.BindInterfacesAndSelfTo<PlayerData>().FromInstance(this).AsSingle().NonLazy();
     }
 }

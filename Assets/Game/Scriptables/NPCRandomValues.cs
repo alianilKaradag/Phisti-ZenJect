@@ -6,20 +6,9 @@ using Zenject;
 [CreateAssetMenu(fileName = "NPCRandomValues", menuName = "Anil/NPCRandomValues")]
 public class NPCRandomValues : ScriptableObjectInstaller<NPCRandomValues>
 {
-    [SerializeField] private NPCRandomValues randomValues;
     public override void InstallBindings()
     {
-        Container.BindInterfacesAndSelfTo<NPCRandomValues>().FromInstance(randomValues).AsSingle().NonLazy();
-        
-        // Container.BindInstance(NewBie_WinAmountRange).IfNotBound();
-        // Container.BindInstance(NewBie_LostAmountRange).IfNotBound();
-        // Container.BindInstance(NewBie_MoneyAmountRange).IfNotBound();
-        // Container.BindInstance(Rookie_WinAmountRange).IfNotBound();
-        // Container.BindInstance(Rookie_LostAmountRange).IfNotBound();
-        // Container.BindInstance(Rookie_MoneyAmountRange).IfNotBound();
-        // Container.BindInstance(Noble_WinAmountRange).IfNotBound();
-        // Container.BindInstance(Noble_LostAmountRange).IfNotBound();
-        // Container.BindInstance(Noble_MoneyAmountRange).IfNotBound();
+        Container.BindInterfacesAndSelfTo<NPCRandomValues>().FromInstance(this).AsSingle().NonLazy();
     }
    
     [Header("New Bie")] 

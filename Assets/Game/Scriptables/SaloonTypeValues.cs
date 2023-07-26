@@ -1,10 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 [CreateAssetMenu(fileName = "SaloonTypeValues", menuName = "Anil/SaloonTypeValues")]
-public class SaloonTypeValues : ScriptableObject
+public class SaloonTypeValues : ScriptableObjectInstaller<SaloonTypeValues>
 {
+    public override void InstallBindings()
+    {
+        Container.BindInterfacesAndSelfTo<SaloonTypeValues>().FromInstance(this).AsSingle().NonLazy();
+    }
+
     [Header("New Bie")]
     public int NewBie_MinBet = 250;
     public int NewBie_MaxBet = 5000;
