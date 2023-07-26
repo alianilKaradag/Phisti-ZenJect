@@ -2190,7 +2190,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89715ad69b973a14899afa2c6730b30b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _scriptableObjectInstallers: []
+  _scriptableObjectInstallers:
+  - {fileID: 11400000, guid: 5f1c2f7cbc371451c8532b2f6308f1a7, type: 2}
   _monoInstallers:
   - {fileID: 363497401}
   _installerPrefabs: []
@@ -3702,13 +3703,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7f8cd31df4ad444e991b6960ba9d66c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 1842052473}
   characters:
   - {fileID: 1842052473}
   - {fileID: 1343355866}
   - {fileID: 1010714626}
   - {fileID: 1686676187}
-  npcRandomValues: {fileID: 11400000, guid: 5f1c2f7cbc371451c8532b2f6308f1a7, type: 2}
 --- !u!114 &700941621
 MonoBehaviour:
   m_ObjectHideFlags: 0

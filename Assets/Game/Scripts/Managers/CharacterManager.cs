@@ -2,18 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Zenject;
-using Random = UnityEngine.Random;
-
 
 public class CharacterManager : MonoBehaviour
 {
-    public CharacterController Player => player;
-
-    [SerializeField] private CharacterController player;
+    [Inject(Id = "PlayerController")] public CharacterController Player { get;}
+    [Inject] private NPCRandomValues npcRandomValues;
     [SerializeField] private List<CharacterController> characters;
-    [SerializeField] private NPCRandomValues npcRandomValues;
     
     private TableData tableData;
     private BoardManager boardManager;

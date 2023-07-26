@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44068feca38574de8ad99a51a4aeb725, type: 3}
   m_Name: NPCRandomValues
   m_EditorClassIdentifier: 
+  randomValues: {fileID: 11400000}
   NewBie_WinAmountRange: {x: 0, y: 25}
   NewBie_LostAmountRange: {x: 10, y: 40}
   NewBie_MoneyAmountRange: {x: 700, y: 2400}
