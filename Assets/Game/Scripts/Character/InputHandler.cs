@@ -6,19 +6,20 @@ using Zenject;
 
 public class InputHandler : MonoBehaviour
 {
-   [SerializeField] private CharacterController characterController;
-
+   private CharacterController playerController;
    private BoardManager boardManager;
 
    [Inject]
-   public void Construct(BoardManager boardManager)
+   public void Construct(BoardManager boardManager, [Inject(Id = "PlayerController")] CharacterController playerController)
    {
       this.boardManager = boardManager;
+      this.playerController = playerController;
    }
+   
    
    private void Update()
    {
-      if (!characterController.IsMyTurn) return;
+      if (!playerController.IsMyTurn) return;
       if (boardManager.IsDealingCards) return;
          
       ClickCheck();
@@ -37,7 +38,7 @@ public class InputHandler : MonoBehaviour
 
             if (card == null) return;
                
-			   characterController.PlayCard(card);
+            playerController.PlayCard(card);
          }    
       }    
    }

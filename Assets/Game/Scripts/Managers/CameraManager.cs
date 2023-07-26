@@ -15,7 +15,7 @@ public class CameraManager : MonoBehaviour
    
     [SerializeField] private CameraType defaultCamera;
     [SerializeField] private CinemachineVirtualCamera[] cameras;
-    [Inject(Id = "Main")] private Camera mainCamera;
+    private Camera mainCamera;
 
     public CinemachineVirtualCamera CurrentCamera { get; private set; }
 
