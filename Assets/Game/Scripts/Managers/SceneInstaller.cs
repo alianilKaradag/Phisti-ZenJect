@@ -22,5 +22,6 @@ public class SceneInstaller : MonoInstaller<SceneInstaller>
         Container.Bind<OptionsMenu>().FromComponentsInHierarchy().AsSingle();
         Container.Bind<PlayerInfoArea>().FromComponentsInHierarchy().AsSingle();
         Container.Bind<UserProfilePopUp>().FromComponentsInHierarchy().AsSingle();
+        Container.Bind<RandomUserInfoGenerator>().AsSingle();
     }
 }

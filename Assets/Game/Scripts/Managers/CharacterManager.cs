@@ -17,11 +17,13 @@ public class CharacterManager : MonoBehaviour
     
     private TableData tableData;
     private BoardManager boardManager;
+    private RandomUserInfoGenerator randomUserInfoDataGenerator;
 
     [Inject]
-    public void Construct(BoardManager boardManager)
+    public void Construct(BoardManager boardManager, RandomUserInfoGenerator randomUserInfoDataGenerator)
     {
         this.boardManager = boardManager;
+        this.randomUserInfoDataGenerator = randomUserInfoDataGenerator;
     }
     
     private void Start()
@@ -62,30 +64,9 @@ public class CharacterManager : MonoBehaviour
             if (isOpen) boardManager.AddUser(characters[i]);
         }
     }
-
+    
     public UserInfoData GetRandomData()
     {
-        var randomName = npcRandomValues.Names[Random.Range(0, npcRandomValues.Names.Count)];
-        var randomWinAmount = Random.Range(npcRandomValues.NewBie_WinAmountRange.x, npcRandomValues.NewBie_WinAmountRange.y);
-        var randomLostAmount = Random.Range(npcRandomValues.NewBie_LostAmountRange.x, npcRandomValues.NewBie_LostAmountRange.y);
-        var randomMoney = Random.Range(npcRandomValues.NewBie_MoneyAmountRange.x,npcRandomValues.NewBie_MoneyAmountRange.y);
-        
-        switch (tableData.SaloonType)
-        {
-            case SaloonType.Rookies:
-                randomWinAmount = Random.Range(npcRandomValues.Rookie_WinAmountRange.x, npcRandomValues.Rookie_WinAmountRange.y);
-                randomLostAmount = Random.Range(npcRandomValues.Rookie_LostAmountRange.x, npcRandomValues.Rookie_LostAmountRange.y);
-                randomMoney = Random.Range(npcRandomValues.Rookie_MoneyAmountRange.x,npcRandomValues.Rookie_MoneyAmountRange.y);
-                break;
-            case SaloonType.Nobles:
-                randomWinAmount = Random.Range(npcRandomValues.Noble_WinAmountRange.x, npcRandomValues.Noble_WinAmountRange.y);
-                randomLostAmount = Random.Range(npcRandomValues.Noble_LostAmountRange.x, npcRandomValues.Noble_LostAmountRange.y);
-                randomMoney = Random.Range(npcRandomValues.Noble_MoneyAmountRange.x,npcRandomValues.Noble_MoneyAmountRange.y);
-                break;
-           
-        }
-        var data = new UserInfoData(randomName, randomWinAmount, randomLostAmount, randomMoney);
-        
-        return data;
+        return randomUserInfoDataGenerator.Generate(npcRandomValues, tableData.SaloonType);
     }
 }
