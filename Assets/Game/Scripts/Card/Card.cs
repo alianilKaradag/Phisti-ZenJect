@@ -5,6 +5,7 @@ using DG.Tweening;
 using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.Events;
+using Zenject;
 using Random = UnityEngine.Random;
 
 public enum CardType
@@ -34,6 +35,15 @@ public enum CardValue
 
 public class Card : MonoBehaviour
 {
+    public class Factory : PlaceholderFactory<Card, Card>
+    {
+        public override Card Create(Card card)
+        {
+            return Instantiate(card);
+        }
+    }
+    
+    
     public CardType CardType => cardType;
     public CardValue CardValue => cardValue;
 
@@ -115,5 +125,11 @@ public class Card : MonoBehaviour
         transform.DOKill();
         Destroy(gameObject);
     }
+
+    public void SetParent(Transform parent)
+    {
+        transform.SetParent(parent);
+    }
+    
 
 }

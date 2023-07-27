@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using NaughtyAttributes;
 using TMPro;
@@ -35,6 +36,7 @@ public class BoardManager : MonoBehaviour
     private ScoreManager scoreManager;
     private GameCompletePopUp gameCompletePopUp;
     private OptionsMenu optionsMenu;
+    private Card.Factory cardFactory;
 
     private bool isDeckOver;
     private bool isPlayerOnTheBoard;
@@ -46,12 +48,13 @@ public class BoardManager : MonoBehaviour
     private Coroutine dealRoutine;
 
     [Inject]
-    public void Construct(CharacterManager characterManager, ScoreManager scoreManager, GameCompletePopUp gameCompletePopUp, OptionsMenu optionsMenu)
+    public void Construct(CharacterManager characterManager, ScoreManager scoreManager, GameCompletePopUp gameCompletePopUp, OptionsMenu optionsMenu, Card.Factory cardFactory)
     {
         this.characterManager = characterManager;
         this.scoreManager = scoreManager;
         this.gameCompletePopUp = gameCompletePopUp;
         this.optionsMenu = optionsMenu;
+        this.cardFactory = cardFactory;
     }
     
     private void Start()
@@ -131,7 +134,9 @@ public class BoardManager : MonoBehaviour
     private Card InitiateCard()
     {
         var lastCard = shuffledDeck.Last();
-        var card = Instantiate(lastCard, deckPoint);
+        var card = cardFactory.Create(lastCard);
+        card.SetParent(deckPoint);
+        //var card = Instantiate(lastCard, deckPoint);
         shuffledDeck.Remove(lastCard);
         card.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
 

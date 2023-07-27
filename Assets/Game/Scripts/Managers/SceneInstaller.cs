@@ -10,6 +10,7 @@ public class SceneInstaller : MonoInstaller<SceneInstaller>
         Container.BindInterfacesAndSelfTo<GameManager>().AsSingle().NonLazy();
         Container.Bind<UIPanelManager>().FromComponentInHierarchy().AsSingle();
         Container.Bind<BoardManager>().FromComponentsInHierarchy().AsSingle();
+        Container.BindFactory<Card, Card, Card.Factory>();
         Container.Bind<CameraManager>().FromComponentsInHierarchy().AsSingle();
         Container.Bind<CharacterManager>().FromComponentsInHierarchy().AsSingle();
         Container.Bind<DataManager>().FromComponentsInHierarchy().AsSingle();
@@ -25,4 +26,5 @@ public class SceneInstaller : MonoInstaller<SceneInstaller>
         Container.Bind<InputHandler>().AsSingle();
         Container.Bind<RandomUserInfoGenerator>().AsSingle();
     }
+
 }
