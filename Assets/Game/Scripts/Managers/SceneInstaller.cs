@@ -20,6 +20,7 @@ public class SceneInstaller : MonoInstaller<SceneInstaller>
         Container.Bind<ScoreManager>().AsSingle();
         Container.Bind<InputHandler>().AsSingle();
         Container.Bind<RandomUserInfoGenerator>().AsSingle();
+        Container.Bind<TableData>().AsTransient();
     }
 
     private void BindFactories()

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TableData : MonoBehaviour
+public class TableData
 {
     public SaloonType SaloonType { get; private set; }
     public int SaloonSize { get; private set; }

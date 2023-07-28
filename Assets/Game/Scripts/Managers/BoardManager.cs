@@ -125,7 +125,7 @@ public class BoardManager : MonoBehaviour
         {
             isGameFresh = false;
             dealRoutine = null;
-            dealRoutine = StartCoroutine(DealCardsOnTheTable());
+            dealRoutine = StartCoroutine(DealGroundCards());
         }
 
         IsDealingCards = false;
@@ -143,7 +143,7 @@ public class BoardManager : MonoBehaviour
         return card;
     }
 
-    private IEnumerator DealCardsOnTheTable() // Starting cards creation on the table
+    private IEnumerator DealGroundCards() // Starting cards creation on the table
     {
         lastThrowPointYPos = cardThrowPoint.position.y;
 
@@ -295,7 +295,6 @@ public class BoardManager : MonoBehaviour
         yPos = lastThrowPointYPos;
         return cardThrowPoint;
     }
-
 
     public void AddPlayedCard(CardValue card)
     {
