@@ -8,19 +8,21 @@ public class InputHandler : MonoBehaviour
 {
    private CharacterController playerController;
    private BoardManager boardManager;
+   private CardDealer cardDealer;
 
    [Inject]
-   public void Construct(BoardManager boardManager, [Inject(Id = "PlayerController")] CharacterController playerController)
+   public void Construct(BoardManager boardManager, [Inject(Id = "PlayerController")] CharacterController playerController, CardDealer cardDealer)
    {
       this.boardManager = boardManager;
       this.playerController = playerController;
+      this.cardDealer = cardDealer;
    }
    
    
    private void Update()
    {
       if (!playerController.IsMyTurn) return;
-      if (boardManager.IsDealingCards) return;
+      if (cardDealer.IsDealingCards) return;
          
       ClickCheck();
    }

@@ -32,6 +32,7 @@ public class SceneInstaller : MonoInstaller<SceneInstaller>
     {
         Container.Bind<UIPanelManager>().FromComponentInHierarchy().AsSingle();
         Container.Bind<BoardManager>().FromComponentsInHierarchy().AsSingle();
+        Container.Bind<CardDealer>().FromComponentsInHierarchy().AsSingle();
         Container.Bind<CameraManager>().FromComponentsInHierarchy().AsSingle();
         Container.Bind<CharacterManager>().FromComponentsInHierarchy().AsSingle();
         Container.Bind<SaloonCreator>().FromComponentsInHierarchy().AsSingle();
@@ -42,5 +43,6 @@ public class SceneInstaller : MonoInstaller<SceneInstaller>
         Container.Bind<OptionsMenu>().FromComponentsInHierarchy().AsSingle();
         Container.Bind<PlayerInfoArea>().FromComponentsInHierarchy().AsSingle();
         Container.Bind<UserProfilePopUp>().FromComponentsInHierarchy().AsSingle();
+
     }
 }

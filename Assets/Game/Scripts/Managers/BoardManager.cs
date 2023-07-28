@@ -9,26 +9,22 @@ using UnityEngine;
 using UnityEngine.Events;
 using Zenject;
 
+[RequireComponent(typeof(CardDealer))]
 public class BoardManager : MonoBehaviour
 {
-    public UnityAction<GameState> OnGameStateChanged { get; set; }
 
     public static UnityAction<Card, CharacterController> OnACardPlayed;
     public List<CardValue> PlayedCards { get; private set; } = new List<CardValue>();
 
-    public bool IsDealingCards { get; private set; }
     public bool IsGameCompleted { get; private set; }
 
-    [SerializeField, Foldout("Setup")] private List<Card> cards;
-    [SerializeField, Foldout("Setup")] private Transform deckPoint;
-    [SerializeField, Foldout("Setup")] private Transform cardThrowPoint;
     [SerializeField, Foldout("Setup")] private TextMeshProUGUI remainingCardText;
     [SerializeField, Foldout("Setup")] private ParticleSystem confettiParticle;
 
     private List<CharacterController> users = new List<CharacterController>();
-    private List<Card> shuffledDeck;
     private List<Card> cardsOnTheTable = new List<Card>();
-    
+    private Coroutine dealRoutine;
+
     private CharacterController currentUser => users[turnIndex];
     private CharacterController lastCardGainedUser;
     private TableData tableData;
@@ -36,27 +32,21 @@ public class BoardManager : MonoBehaviour
     private ScoreManager scoreManager;
     private GameCompletePopUp gameCompletePopUp;
     private OptionsMenu optionsMenu;
-    private Card.Factory cardFactory;
-
-    private bool isDeckOver;
-    private bool isPlayerOnTheBoard;
-    private bool isGameFresh = true;
-
+    private CardDealer cardDealer;
+    
     private int turnIndex;
-    private float lastThrowPointYPos;
 
-    private Coroutine dealRoutine;
 
     [Inject]
-    public void Construct(CharacterManager characterManager, ScoreManager scoreManager, GameCompletePopUp gameCompletePopUp, OptionsMenu optionsMenu, Card.Factory cardFactory)
+    public void Construct(CharacterManager characterManager, ScoreManager scoreManager, GameCompletePopUp gameCompletePopUp, OptionsMenu optionsMenu, CardDealer cardDealer)
     {
         this.characterManager = characterManager;
         this.scoreManager = scoreManager;
         this.gameCompletePopUp = gameCompletePopUp;
         this.optionsMenu = optionsMenu;
-        this.cardFactory = cardFactory;
+        this.cardDealer = cardDealer;
     }
-    
+
     private void Start()
     {
         SaloonManager.OnJoinedTable += PlayerJoinedTable;
@@ -72,7 +62,7 @@ public class BoardManager : MonoBehaviour
         OptionsMenu.OnBackToLobbyChoosed -= BackToLobby;
         OptionsMenu.OnNewGameChoosed -= StartNewGame;
     }
-    
+
     public void AddUser(CharacterController character)
     {
         users.Add(character);
@@ -81,98 +71,17 @@ public class BoardManager : MonoBehaviour
     private void PlayerJoinedTable(TableData tableData)
     {
         this.tableData = tableData;
-        StartCoroutine(CreateDeck());
+        cardDealer.CreateDeck(users);
     }
 
-    private IEnumerator CreateDeck()
+    public void UpdateRemainingText(int count)
     {
-        if (!isPlayerOnTheBoard) // for camera transition (Intro cam -> Gameplay cam)
-        {
-            yield return new WaitForSeconds(1.5f);
-        }
-
-        isPlayerOnTheBoard = true;
-        shuffledDeck = new List<Card>();
-        shuffledDeck = cards.OrderBy(a => Guid.NewGuid()).ToList();
-        dealRoutine = StartCoroutine(DealCardsRoutine());
-    }
-
-    private IEnumerator DealCardsRoutine()
-    {
-        if (isDeckOver) yield break;
-
-        IsDealingCards = true;
-
-        foreach (var user in users)
-        {
-            for (var i = 0; i < 4; i++)
-            {
-                var canKeepGoing = false;
-                var card = InitiateCard();
-
-                var destinations = new List<Transform>() {user.CardFirstDestination, user.CardPoints[i]};
-                user.AddCard(card);
-                card.FlyToCharacterHand(destinations, () => canKeepGoing = true);
-                UpdateRemainingText();
-
-                if (shuffledDeck.Count == 0) isDeckOver = true;
-
-                yield return new WaitUntil(() => canKeepGoing);
-            }
-        }
-
-        if (isGameFresh)
-        {
-            isGameFresh = false;
-            dealRoutine = null;
-            dealRoutine = StartCoroutine(DealGroundCards());
-        }
-
-        IsDealingCards = false;
-    }
-
-    private Card InitiateCard()
-    {
-        var lastCard = shuffledDeck.Last();
-        var card = cardFactory.Create(lastCard);
-        card.SetParent(deckPoint);
-        //var card = Instantiate(lastCard, deckPoint);
-        shuffledDeck.Remove(lastCard);
-        card.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-
-        return card;
-    }
-
-    private IEnumerator DealGroundCards() // Starting cards creation on the table
-    {
-        lastThrowPointYPos = cardThrowPoint.position.y;
-
-        for (var i = 0; i < 4; i++)
-        {
-            var canKeepGoing = false;
-            var card = InitiateCard();
-
-            cardsOnTheTable.Add(card);
-            card.Play(cardThrowPoint, lastThrowPointYPos, i == 3, () => canKeepGoing = true);
-            UpdateRemainingText();
-            IncreaseLastCardYPos();
-
-            yield return new WaitUntil(() => canKeepGoing);
-        }
-
-        dealRoutine = null;
-        PlayedCards.Add(cardsOnTheTable.Last().CardValue);
-        SetUserTurn();
-    }
-
-    private void UpdateRemainingText()
-    {
-        remainingCardText.text = shuffledDeck.Count.ToString();
+        remainingCardText.text = count.ToString();
     }
 
     private void ACardPlayed(Card card, CharacterController user)
     {
-        IncreaseLastCardYPos();
+        cardDealer.IncreaseLastCardYPos();
 
         if (cardsOnTheTable.Count == 0)
         {
@@ -187,7 +96,7 @@ public class BoardManager : MonoBehaviour
 
         turnIndex = (turnIndex + 1) % tableData.SaloonSize;
         SetUserTurn();
-        CheckForNewTurnDealing();
+        cardDealer.CheckForNewTurnDealing();
     }
 
     private bool CheckForGameComplete()
@@ -230,17 +139,6 @@ public class BoardManager : MonoBehaviour
         }
     }
 
-    private void CheckForNewTurnDealing()
-    {
-        if (!isDeckOver)
-        {
-            if (users.All(x => x.CardsOnHand.Count == 0))
-            {
-                dealRoutine = StartCoroutine(DealCardsRoutine());
-            }
-        }
-    }
-
     private void GainOnTheTableCards(Card card, bool isPhisti, CharacterController user)
     {
         cardsOnTheTable.Add(card);
@@ -255,16 +153,11 @@ public class BoardManager : MonoBehaviour
         }
 
         HideCardsOnTheTable();
-        lastThrowPointYPos = cardThrowPoint.position.y;
+        cardDealer.ResetThrowPos();
         lastCardGainedUser = user;
     }
 
-    private void IncreaseLastCardYPos()
-    {
-        lastThrowPointYPos += 0.001f;
-    }
-
-    private void SetUserTurn()
+    public void SetUserTurn()
     {
         var user = users[turnIndex];
         user.MyTurn(cardsOnTheTable.LastOrDefault());
@@ -290,11 +183,7 @@ public class BoardManager : MonoBehaviour
         cardsOnTheTable.Clear();
     }
 
-    public Transform GetThrowPoint(out float yPos)
-    {
-        yPos = lastThrowPointYPos;
-        return cardThrowPoint;
-    }
+    public Transform GetThrowPoint(out float yPos) => cardDealer.GetThrowPoint(out yPos);
 
     public void AddPlayedCard(CardValue card)
     {
@@ -313,7 +202,7 @@ public class BoardManager : MonoBehaviour
 
         foreach (var user in users)
         {
-            user.GameCompleted(winner, tableData.BetAmount , tableData.SaloonSize);
+            user.GameCompleted(winner, tableData.BetAmount, tableData.SaloonSize);
         }
 
         StartCoroutine(CallGameCompletePopUp(winner));
@@ -322,12 +211,12 @@ public class BoardManager : MonoBehaviour
     private IEnumerator CallGameCompletePopUp(CharacterController winner)
     {
         var didPlayerWin = winner == characterManager.Player;
-        
+
         if (didPlayerWin)
         {
             confettiParticle.Play();
         }
-        
+
         yield return new WaitForSeconds(1f);
 
         gameCompletePopUp.SetValues(winner.UserData.UserName, tableData.BetAmount, didPlayerWin);
@@ -343,31 +232,22 @@ public class BoardManager : MonoBehaviour
 
     private void ResetBoard()
     {
-        isDeckOver = false;
         IsGameCompleted = false;
-        isPlayerOnTheBoard = false;
-        isGameFresh = true;
         turnIndex = 0;
-        lastThrowPointYPos = cardThrowPoint.position.y;
-        DestroyCardsOnTheTable();
         PlayedCards.Clear();
-        remainingCardText.text = cards.Count.ToString();
+        DestroyCardsOnTheTable();
+        remainingCardText.text = "52";
         users.ForEach(x => x.Reset());
-
-        if (dealRoutine != null)
-        {
-            StopCoroutine(dealRoutine);
-            dealRoutine = null;
-        }
+        cardDealer.Reset();
     }
 
     private void BackToLobby()
     {
         if (!IsGameCompleted)
         {
-            characterManager.Player.GameCompleted(null, tableData.BetAmount,  tableData.SaloonSize);
+            characterManager.Player.GameCompleted(null, tableData.BetAmount, tableData.SaloonSize);
         }
-        
+
         ResetBoard();
         users.Clear();
     }
@@ -378,8 +258,14 @@ public class BoardManager : MonoBehaviour
         {
             characterManager.Player.GameCompleted(null, tableData.BetAmount, tableData.SaloonSize);
         }
-        
+
         ResetBoard();
-        StartCoroutine(CreateDeck());
+        cardDealer.CreateDeck(users);
     }
+
+    public void AddCardToTable(Card card)
+    {
+        cardsOnTheTable.Add(card);
+    }
+
 }

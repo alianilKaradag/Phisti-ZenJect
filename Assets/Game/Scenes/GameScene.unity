@@ -4021,6 +4021,7 @@ GameObject:
   m_Component:
   - component: {fileID: 830885427}
   - component: {fileID: 830885428}
+  - component: {fileID: 830885429}
   m_Layer: 0
   m_Name: Board
   m_TagString: Untagged
@@ -4060,6 +4061,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 83064527925b14c3e92f1f86c4f9fd60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  remainingCardText: {fileID: 1956216463}
+  confettiParticle: {fileID: 1956331154}
+--- !u!114 &830885429
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 830885426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c234e288b063341ac92317fafd7e2773, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   cards:
@@ -4117,8 +4132,6 @@ MonoBehaviour:
   - {fileID: 3272715031282250085, guid: 73f9fbaa0ed147a4598cfb2bbe05f2f2, type: 3}
   deckPoint: {fileID: 5708573620933750317}
   cardThrowPoint: {fileID: 1047623392}
-  remainingCardText: {fileID: 1956216463}
-  confettiParticle: {fileID: 1956331154}
 --- !u!1 &839498207
 GameObject:
   m_ObjectHideFlags: 0
