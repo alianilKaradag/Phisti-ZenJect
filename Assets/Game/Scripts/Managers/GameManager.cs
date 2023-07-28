@@ -9,7 +9,7 @@ public enum GameState
     Intro, MainMenu, Gameplay
 }
 
-public class GameManager : IInitializable, ILateDisposable
+public class GameManager : IInitializable, IDisposable
 {
     public UnityAction<GameState> OnGameStateChanged { get; set; }
     private GameState currentState;
@@ -19,11 +19,6 @@ public class GameManager : IInitializable, ILateDisposable
     public GameManager(UIPanelManager uiPanelManager)
     {
         this.uiPanelManager = uiPanelManager;
-
-    }
-
-    public void Construct()
-    {
     }
     
     public void Initialize()
@@ -36,12 +31,10 @@ public class GameManager : IInitializable, ILateDisposable
     {
         OnGameStateChanged?.Invoke(GameState.Gameplay);
     }
-
-
-    public void LateDispose()
+    
+    public void Dispose()
     {
         DOTween.KillAll();
-
     }
 }
 

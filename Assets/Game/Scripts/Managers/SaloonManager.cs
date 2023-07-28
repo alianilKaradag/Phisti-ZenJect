@@ -18,10 +18,9 @@ public class SaloonManager : MonoBehaviour
     public static UnityAction<SaloonType, int, int> OnGameSaloonCreateSelected;
     public static UnityAction OnGameSaloonCreationCanceled;
     
-    [SerializeField, Foldout("Setup")] private SaloonTypeValues saloonTypeValues;
-
     private TableData tableData;
     private SaloonType currentSaloonType;
+    private SaloonTypeValues saloonTypeValues;
     private CameraManager cameraManager;
     private SaloonCreator saloonCreator;
     private ScrollManager scrollManager;
@@ -29,13 +28,14 @@ public class SaloonManager : MonoBehaviour
     private PlayerInfoArea playerInfoArea;
 
     [Inject]
-    public void Construct(CameraManager cameraManager, SaloonCreator saloonCreator, ScrollManager scrollManager, OptionsMenu optionsMenu, PlayerInfoArea playerInfoArea)
+    public void Construct(CameraManager cameraManager, SaloonCreator saloonCreator, ScrollManager scrollManager, OptionsMenu optionsMenu, PlayerInfoArea playerInfoArea, SaloonTypeValues saloonTypeValues)
     {
         this.cameraManager = cameraManager;
         this.saloonCreator = saloonCreator;
         this.scrollManager = scrollManager;
         this.optionsMenu = optionsMenu;
         this.playerInfoArea = playerInfoArea;
+        this.saloonTypeValues = saloonTypeValues;
     }
     
     private void Awake()

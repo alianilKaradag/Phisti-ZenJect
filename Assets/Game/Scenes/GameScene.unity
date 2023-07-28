@@ -3657,7 +3657,6 @@ GameObject:
   - component: {fileID: 700941616}
   - component: {fileID: 700941618}
   - component: {fileID: 700941617}
-  - component: {fileID: 700941621}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -3692,7 +3691,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 724b19324dc604848b9e38a5648a3d0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  saloonTypeValues: {fileID: 11400000, guid: d3403166834ae4c889187521294cb326, type: 2}
 --- !u!114 &700941618
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3710,19 +3708,6 @@ MonoBehaviour:
   - {fileID: 1343355866}
   - {fileID: 1010714626}
   - {fileID: 1686676187}
---- !u!114 &700941621
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 700941615}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 328158f9b6f1341bbbbef9d878befe9d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerData: {fileID: 11400000, guid: 2060618cffce6431f96fccfaefe8a982, type: 2}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0

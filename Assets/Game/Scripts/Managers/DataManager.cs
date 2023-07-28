@@ -1,32 +1,36 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using Zenject;
 
-public class DataManager : MonoBehaviour
+public class DataManager : IDisposable
 {
-    public PlayerData PlayerData => playerData;
-    [SerializeField] private PlayerData playerData;
+    public PlayerData PlayerData { get; private set; }
 
-    private void OnDestroy()
+    [Inject]
+    public DataManager(PlayerData playerData)
+    {
+        PlayerData = playerData;
+    }
+    
+    public void Dispose()
     {
         SaveData();
     }
     
     public void UpdateMoney(int totalMoney)
     {
-        playerData.PlayerTotalMoney += totalMoney;
+        PlayerData.PlayerTotalMoney += totalMoney;
     }
     
     public void IncreaseWinAmount()
     {
-        playerData.WinAmount++;
+        PlayerData.WinAmount++;
     }
     
     public void IncreaseLostAmount()
     {
-        playerData.LostAmount++;
+        PlayerData.LostAmount++;
     }
 
 #if UNITY_EDITOR
@@ -35,18 +39,18 @@ public class DataManager : MonoBehaviour
         var transferData = ScriptableObject.CreateInstance<PlayerData>();
         var savePath = "Assets/Game/Scriptables/PlayerData" + ".asset";
 
-        transferData.PlayerTotalMoney = playerData.PlayerTotalMoney;
-        transferData.WinAmount = playerData.WinAmount;
-        transferData.LostAmount = playerData.LostAmount;
+        transferData.PlayerTotalMoney = PlayerData.PlayerTotalMoney;
+        transferData.WinAmount = PlayerData.WinAmount;
+        transferData.LostAmount = PlayerData.LostAmount;
         
         AssetDatabase.CreateAsset(transferData, savePath);
-        playerData = (PlayerData) AssetDatabase.LoadAssetAtPath(savePath, typeof(PlayerData));
+        PlayerData = (PlayerData) AssetDatabase.LoadAssetAtPath(savePath, typeof(PlayerData));
         
-        EditorUtility.SetDirty(playerData);
+        EditorUtility.SetDirty(PlayerData);
         AssetDatabase.SaveAssets();
         EditorUtility.FocusProjectWindow();
         Selection.activeObject = transferData;
     }
 #endif
-
+    
 }
