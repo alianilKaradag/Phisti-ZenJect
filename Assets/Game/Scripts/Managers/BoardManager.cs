@@ -12,7 +12,6 @@ using Zenject;
 [RequireComponent(typeof(CardDealer))]
 public class BoardManager : MonoBehaviour
 {
-
     public static UnityAction<Card, CharacterController> OnACardPlayed;
     public List<CardValue> PlayedCards { get; private set; } = new List<CardValue>();
 
@@ -21,31 +20,32 @@ public class BoardManager : MonoBehaviour
     [SerializeField, Foldout("Setup")] private TextMeshProUGUI remainingCardText;
     [SerializeField, Foldout("Setup")] private ParticleSystem confettiParticle;
 
-    private List<CharacterController> users = new List<CharacterController>();
+    //private List<CharacterController> users = new List<CharacterController>();
     private List<Card> cardsOnTheTable = new List<Card>();
-    private Coroutine dealRoutine;
+    //private Coroutine dealRoutine;
 
-    private CharacterController currentUser => users[turnIndex];
-    private CharacterController lastCardGainedUser;
+    //private CharacterController currentUser => users[turnIndex];
+    //private CharacterController lastCardGainedUser;
     private TableData tableData;
-    private CharacterManager characterManager;
-    private ScoreManager scoreManager;
-    private GameCompletePopUp gameCompletePopUp;
-    private OptionsMenu optionsMenu;
-    private CardDealer cardDealer;
+    [Inject] private CharacterManager characterManager;
+    //[Inject] private ScoreManager scoreManager;
+    [Inject] private GameCompletePopUp gameCompletePopUp;
+    [Inject] private OptionsMenu optionsMenu;
+    [Inject] private CardDealer cardDealer;
+    [Inject] private UserHandler userHandler;
     
-    private int turnIndex;
+   // private int turnIndex;
 
 
-    [Inject]
-    public void Construct(CharacterManager characterManager, ScoreManager scoreManager, GameCompletePopUp gameCompletePopUp, OptionsMenu optionsMenu, CardDealer cardDealer)
-    {
-        this.characterManager = characterManager;
-        this.scoreManager = scoreManager;
-        this.gameCompletePopUp = gameCompletePopUp;
-        this.optionsMenu = optionsMenu;
-        this.cardDealer = cardDealer;
-    }
+    // [Inject]
+    // public void Construct(CharacterManager characterManager, ScoreManager scoreManager, GameCompletePopUp gameCompletePopUp, OptionsMenu optionsMenu, CardDealer cardDealer)
+    // {
+    //     this.characterManager = characterManager;
+    //     this.scoreManager = scoreManager;
+    //     this.gameCompletePopUp = gameCompletePopUp;
+    //     this.optionsMenu = optionsMenu;
+    //     this.cardDealer = cardDealer;
+    // }
 
     private void Start()
     {
@@ -54,7 +54,7 @@ public class BoardManager : MonoBehaviour
         OptionsMenu.OnBackToLobbyChoosed += BackToLobby;
         OptionsMenu.OnNewGameChoosed += StartNewGame;
     }
-
+    
     private void OnDestroy()
     {
         SaloonManager.OnJoinedTable -= PlayerJoinedTable;
@@ -63,17 +63,18 @@ public class BoardManager : MonoBehaviour
         OptionsMenu.OnNewGameChoosed -= StartNewGame;
     }
 
-    public void AddUser(CharacterController character)
-    {
-        users.Add(character);
-    }
-
     private void PlayerJoinedTable(TableData tableData)
     {
         this.tableData = tableData;
-        cardDealer.CreateDeck(users);
+        userHandler.SetTableData(tableData);
+        cardDealer.CreateDeck(userHandler.Users);
     }
 
+    public void AddUser(CharacterController character)
+    {
+        userHandler.AddUser(character);
+    }
+    
     public void UpdateRemainingText(int count)
     {
         remainingCardText.text = count.ToString();
@@ -93,9 +94,9 @@ public class BoardManager : MonoBehaviour
         }
 
         if (CheckForGameComplete()) return;
-
-        turnIndex = (turnIndex + 1) % tableData.SaloonSize;
-        SetUserTurn();
+        
+        userHandler.IncreaseTurnIndex();
+        userHandler.SetTurn(cardsOnTheTable.LastOrDefault());
         cardDealer.CheckForNewTurnDealing();
     }
 
@@ -107,10 +108,11 @@ public class BoardManager : MonoBehaviour
 
             if (cardsOnTheTable.Count > 0)
             {
-                GiveTheLastCardsToLastGainedOne();
+                userHandler.GainLevelEndTableCards(cardsOnTheTable);
+                HideCardsOnTheTable();
             }
 
-            DetectWinner();
+            userHandler.DetectWinner();
             return true;
         }
 
@@ -139,28 +141,18 @@ public class BoardManager : MonoBehaviour
         }
     }
 
+    public void SetUserTurn()
+    {
+        userHandler.SetTurn(cardsOnTheTable.LastOrDefault());
+    }
+
     private void GainOnTheTableCards(Card card, bool isPhisti, CharacterController user)
     {
         cardsOnTheTable.Add(card);
-
-        if (isPhisti)
-        {
-            currentUser.CardsGainedWithPhisti(cardsOnTheTable);
-        }
-        else
-        {
-            currentUser.CardsGainedNormally(cardsOnTheTable);
-        }
-
+        userHandler.GainCards(cardsOnTheTable, isPhisti);
         HideCardsOnTheTable();
         cardDealer.ResetThrowPos();
-        lastCardGainedUser = user;
-    }
-
-    public void SetUserTurn()
-    {
-        var user = users[turnIndex];
-        user.MyTurn(cardsOnTheTable.LastOrDefault());
+        userHandler.ChangeLastGainUser(user);
     }
 
     private void HideCardsOnTheTable()
@@ -190,25 +182,13 @@ public class BoardManager : MonoBehaviour
         PlayedCards.Add(card);
     }
 
-    private void GiveTheLastCardsToLastGainedOne()
+    public TableData GetTableData() => tableData;
+
+    public void CallGameCompletePopUp(CharacterController winner)
     {
-        currentUser.CardsGainedNormally(cardsOnTheTable);
-        HideCardsOnTheTable();
+        StartCoroutine(CallGameCompletePopUpRoutine(winner));
     }
-
-    private void DetectWinner()
-    {
-        var winner = scoreManager.GetWinner(users);
-
-        foreach (var user in users)
-        {
-            user.GameCompleted(winner, tableData.BetAmount, tableData.SaloonSize);
-        }
-
-        StartCoroutine(CallGameCompletePopUp(winner));
-    }
-
-    private IEnumerator CallGameCompletePopUp(CharacterController winner)
+    private IEnumerator CallGameCompletePopUpRoutine(CharacterController winner)
     {
         var didPlayerWin = winner == characterManager.Player;
 
@@ -233,11 +213,12 @@ public class BoardManager : MonoBehaviour
     private void ResetBoard()
     {
         IsGameCompleted = false;
-        turnIndex = 0;
+        //turnIndex = 0;
         PlayedCards.Clear();
         DestroyCardsOnTheTable();
         remainingCardText.text = "52";
-        users.ForEach(x => x.Reset());
+        //users.ForEach(x => x.Reset());
+        userHandler.Reset();
         cardDealer.Reset();
     }
 
@@ -249,7 +230,7 @@ public class BoardManager : MonoBehaviour
         }
 
         ResetBoard();
-        users.Clear();
+        userHandler.ClearUsers();
     }
 
     private void StartNewGame()
@@ -260,7 +241,7 @@ public class BoardManager : MonoBehaviour
         }
 
         ResetBoard();
-        cardDealer.CreateDeck(users);
+        cardDealer.CreateDeck(userHandler.Users);
     }
 
     public void AddCardToTable(Card card)

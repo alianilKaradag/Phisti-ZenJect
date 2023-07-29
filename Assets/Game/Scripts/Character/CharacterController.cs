@@ -110,7 +110,6 @@ public class CharacterController : MonoBehaviour
         var winAmount = userData.WinAmount;
         var lostAmount = userData.LostAmount;
         var money = userData.MoneyAmount;
-        UserInfoData newData;
         
         if (winner == this)
         {

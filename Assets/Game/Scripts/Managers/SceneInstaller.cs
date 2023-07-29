@@ -21,6 +21,7 @@ public class SceneInstaller : MonoInstaller<SceneInstaller>
         Container.Bind<InputHandler>().AsSingle();
         Container.Bind<RandomUserInfoGenerator>().AsSingle();
         Container.Bind<TableData>().AsTransient();
+        Container.Bind<UserHandler>().AsSingle();
     }
 
     private void BindFactories()

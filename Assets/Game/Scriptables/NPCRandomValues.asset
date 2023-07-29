@@ -12,13 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44068feca38574de8ad99a51a4aeb725, type: 3}
   m_Name: NPCRandomValues
   m_EditorClassIdentifier: 
-  randomValues: {fileID: 11400000}
   NewBie_WinAmountRange: {x: 0, y: 25}
   NewBie_LostAmountRange: {x: 10, y: 40}
-  NewBie_MoneyAmountRange: {x: 700, y: 2400}
+  NewBie_MoneyAmountRange: {x: 11000, y: 24000}
   Rookie_WinAmountRange: {x: 50, y: 130}
   Rookie_LostAmountRange: {x: 50, y: 70}
-  Rookie_MoneyAmountRange: {x: 2600, y: 100000}
+  Rookie_MoneyAmountRange: {x: 24000, y: 95000}
   Noble_WinAmountRange: {x: 110, y: 400}
   Noble_LostAmountRange: {x: 100, y: 200}
   Noble_MoneyAmountRange: {x: 95000, y: 850000}

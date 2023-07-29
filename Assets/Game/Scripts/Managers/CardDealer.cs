@@ -121,8 +121,6 @@ public class CardDealer : MonoBehaviour
         lastThrowPointYPos += 0.001f;
     }
 
-    public int GetCurrentDeckCardAmount() => shuffledDeck != null ? shuffledDeck.Count : 0;
-
     public void CheckForNewTurnDealing()
     {
         if (!isDeckOver)

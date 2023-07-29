@@ -13,14 +13,16 @@ public class CharacterManager : MonoBehaviour
     private TableData tableData;
     private BoardManager boardManager;
     private RandomUserInfoGenerator randomUserInfoDataGenerator;
+    private UserHandler userHandler;
 
     [Inject]
-    public void Construct(BoardManager boardManager, RandomUserInfoGenerator randomUserInfoDataGenerator)
+    public void Construct(BoardManager boardManager, RandomUserInfoGenerator randomUserInfoDataGenerator, UserHandler userHandler)
     {
         this.boardManager = boardManager;
         this.randomUserInfoDataGenerator = randomUserInfoDataGenerator;
+        this.userHandler = userHandler;
     }
-    
+
     private void Start()
     {
         SaloonManager.OnJoinedTable += DecideCharacters;
