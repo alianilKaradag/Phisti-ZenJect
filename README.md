@@ -1,4 +1,5 @@
-# Phisti-ZenJect
+# Phisti Card Game
+Zenject Implementation
 
 <img src="https://github.com/alianilKaradag/Phisti-ZenJect/blob/main/SS/ss1.png" width="256">
 <img src="https://github.com/alianilKaradag/Phisti-ZenJect/blob/main/SS/ss2.png" width="256">
