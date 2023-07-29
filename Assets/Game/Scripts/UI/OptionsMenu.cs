@@ -17,32 +17,26 @@ public class OptionsMenu : MonoBehaviour
         BackToLobby
     }
 
-    public static UnityAction OnNewGameChoosed;
-    public static UnityAction OnBackToLobbyChoosed;
     public bool IsOpen { get; private set; }
 
     [SerializeField, Foldout("Setup")] private Transform contents;
     [SerializeField, Foldout("Setup")] private Transform optionsButtonImage;
 
+    [Inject] private BoardManager boardManager;
+    [Inject] private ConfirmationPopUp confirmationPopUp;
+    [Inject] private SignalBus signalBus;
+    
     private Tween moveTween;
     private OptionType optionType;
-    private BoardManager boardManager;
-    private ConfirmationPopUp confirmationPopUp;
 
     private const float contentsVisibleLocalXPos = -260;
     private const float contentsUnvisibleLocalXPos = 640;
-
-    [Inject]
-    public void Construct(BoardManager boardManager, ConfirmationPopUp confirmationPopUp)
-    {
-        this.boardManager = boardManager;
-        this.confirmationPopUp = confirmationPopUp;
-    }
+    
     
     private void Start()
     {
         contents.gameObject.SetActive(false);
-        confirmationPopUp.OnClickedConfirmationButton += ConfirmationButtonClicked;
+        signalBus.Subscribe<OnClickedConfirmationButtonSignal>(x => ConfirmationButtonClicked(x.IsAccepted));
     }
 
     public void SetOpenableStatus(bool canOpen)
@@ -100,7 +94,7 @@ public class OptionsMenu : MonoBehaviour
         }
         
         Hide(() => SetOpenableStatus(true));
-        OnNewGameChoosed?.Invoke();
+        signalBus.TryFire(new OnNewGameChoosedSignal());
     }
 
     public void OnBackToLobbyClicked()
@@ -114,7 +108,7 @@ public class OptionsMenu : MonoBehaviour
         }
         
         Hide(() => SetOpenableStatus(false));
-        OnBackToLobbyChoosed?.Invoke();
+        signalBus.TryFire(new OnBackToLobbyChoosedSignal());
     }
 
     private void ConfirmationButtonClicked(bool isAccepted)
@@ -124,12 +118,12 @@ public class OptionsMenu : MonoBehaviour
             if (optionType == OptionType.NewGame)
             {
                 Hide(() => SetOpenableStatus(true));
-                OnNewGameChoosed?.Invoke();
+                signalBus.TryFire(new OnNewGameChoosedSignal());
             }
             else
             {
                 Hide(() => SetOpenableStatus(false));
-                OnBackToLobbyChoosed?.Invoke();
+                signalBus.TryFire(new OnBackToLobbyChoosedSignal());
             }
         }
     }

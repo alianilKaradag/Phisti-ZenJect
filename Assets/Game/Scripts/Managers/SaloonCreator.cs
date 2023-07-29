@@ -22,20 +22,16 @@ public class SaloonCreator : MonoBehaviour
     [SerializeField, Foldout("Setup")] private TextMeshProUGUI maxBetText;
     [SerializeField, Foldout("Setup")] private Button createButton;
 
+    [Inject] private DataManager dataManager;
+    [Inject] private SignalBus signalBus;
+    
     private SaloonType saloonType;
     private Tween scaleTween;
     private int minBet;
     private int maxBet;
     private int currentBet;
     private bool isOpen;
-    private DataManager dataManager;
     private int playerTotalMoney => dataManager == null ? 0 : dataManager.PlayerData.PlayerTotalMoney;
-
-    [Inject]
-    public void Construct(DataManager dataManager)
-    {
-        this.dataManager = dataManager;
-    }
 
     private void Awake()
     {
@@ -71,7 +67,7 @@ public class SaloonCreator : MonoBehaviour
         CloseCreateTable();
         SetCreateButtonInteractable(false);
         var tableData = new TableData(saloonType, toggle_2Player.isOn ? 2 : 4, currentBet);
-        SaloonManager.OnJoinedTable?.Invoke(tableData);
+        signalBus.TryFire(new OnJoinedTableSignal(tableData));
     }
 
     public void OnToggle_2PlayerClicked()
@@ -129,7 +125,7 @@ public class SaloonCreator : MonoBehaviour
     public void OnExitButtonClicked()
     {
         CloseCreateTable();
-        SaloonManager.OnGameSaloonCreationCanceled?.Invoke();
+        signalBus.TryFire(new OnGameSaloonCreationCanceledSignal());
     }
 
     private void KillScaleTween()

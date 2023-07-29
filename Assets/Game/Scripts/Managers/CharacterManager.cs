@@ -6,31 +6,26 @@ using Zenject;
 
 public class CharacterManager : MonoBehaviour
 {
-    [Inject(Id = "PlayerController")] public CharacterController Player { get;}
-    [Inject] private NPCRandomValues npcRandomValues;
     [SerializeField] private List<CharacterController> characters;
-    
-    private TableData tableData;
+    [Inject(Id = "PlayerController")] public CharacterController Player { get;}
+    [Inject]private NPCRandomValues npcRandomValues;
+    [Inject]private SignalBus signalBus;
     private BoardManager boardManager;
     private RandomUserInfoGenerator randomUserInfoDataGenerator;
-    private UserHandler userHandler;
+    
+    private TableData tableData;
 
     [Inject]
-    public void Construct(BoardManager boardManager, RandomUserInfoGenerator randomUserInfoDataGenerator, UserHandler userHandler)
+    public void Construct(BoardManager boardManager, RandomUserInfoGenerator randomUserInfoDataGenerator)
     {
         this.boardManager = boardManager;
         this.randomUserInfoDataGenerator = randomUserInfoDataGenerator;
-        this.userHandler = userHandler;
     }
 
     private void Start()
     {
-        SaloonManager.OnJoinedTable += DecideCharacters;
-    }
-
-    private void OnDestroy()
-    {
-        SaloonManager.OnJoinedTable -= DecideCharacters;
+        signalBus.Subscribe<OnJoinedTableSignal>(x => DecideCharacters(x.TableData));
+        
     }
 
     private void DecideCharacters(TableData tableData)

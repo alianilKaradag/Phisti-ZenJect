@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1dabe870494504c0695b067e28e3ad93, type: 3}
   m_Name: PlayerData
   m_EditorClassIdentifier: 
-  WinAmount: 13
-  LostAmount: 72
-  playerTotalMoney: 901750
+  WinAmount: 15
+  LostAmount: 81
+  playerTotalMoney: 895500

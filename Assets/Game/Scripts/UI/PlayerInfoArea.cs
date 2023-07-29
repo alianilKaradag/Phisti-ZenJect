@@ -13,27 +13,20 @@ public class PlayerInfoArea : MonoBehaviour
     [SerializeField, Foldout("Settings")] private float disappearDuration = 0.2f;
     [SerializeField, Foldout("Setup")] private CanvasGroup canvasGroup;
 
-    private DataManager dataManager;
+    [Inject] private DataManager dataManager;
+    [Inject] private SignalBus signalBus;
+    
     private Tween fadeTween;
     private UserInfoData data;
 
     private bool isOpen = true;
 
-    [Inject]
-    public void Construct(DataManager dataManager)
-    {
-        this.dataManager = dataManager;
-    }
+
     
     private void Start()
     {
         UpdateData();
-        OptionsMenu.OnBackToLobbyChoosed += Open;
-    }
-
-    private void OnDestroy()
-    {
-        OptionsMenu.OnBackToLobbyChoosed -= Open;
+        signalBus.Subscribe<OnBackToLobbyChoosedSignal>(x => Open());
     }
 
     public void Open()

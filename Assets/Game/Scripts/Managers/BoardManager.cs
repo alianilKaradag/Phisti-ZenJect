@@ -12,57 +12,30 @@ using Zenject;
 [RequireComponent(typeof(CardDealer))]
 public class BoardManager : MonoBehaviour
 {
-    public static UnityAction<Card, CharacterController> OnACardPlayed;
     public List<CardValue> PlayedCards { get; private set; } = new List<CardValue>();
-
     public bool IsGameCompleted { get; private set; }
 
     [SerializeField, Foldout("Setup")] private TextMeshProUGUI remainingCardText;
     [SerializeField, Foldout("Setup")] private ParticleSystem confettiParticle;
-
-    //private List<CharacterController> users = new List<CharacterController>();
-    private List<Card> cardsOnTheTable = new List<Card>();
-    //private Coroutine dealRoutine;
-
-    //private CharacterController currentUser => users[turnIndex];
-    //private CharacterController lastCardGainedUser;
-    private TableData tableData;
+    
     [Inject] private CharacterManager characterManager;
-    //[Inject] private ScoreManager scoreManager;
     [Inject] private GameCompletePopUp gameCompletePopUp;
     [Inject] private OptionsMenu optionsMenu;
     [Inject] private CardDealer cardDealer;
     [Inject] private UserHandler userHandler;
+    [Inject] private SignalBus signalBus;
     
-   // private int turnIndex;
-
-
-    // [Inject]
-    // public void Construct(CharacterManager characterManager, ScoreManager scoreManager, GameCompletePopUp gameCompletePopUp, OptionsMenu optionsMenu, CardDealer cardDealer)
-    // {
-    //     this.characterManager = characterManager;
-    //     this.scoreManager = scoreManager;
-    //     this.gameCompletePopUp = gameCompletePopUp;
-    //     this.optionsMenu = optionsMenu;
-    //     this.cardDealer = cardDealer;
-    // }
+    private List<Card> cardsOnTheTable = new List<Card>();
+    private TableData tableData;
 
     private void Start()
     {
-        SaloonManager.OnJoinedTable += PlayerJoinedTable;
-        OnACardPlayed += ACardPlayed;
-        OptionsMenu.OnBackToLobbyChoosed += BackToLobby;
-        OptionsMenu.OnNewGameChoosed += StartNewGame;
+        signalBus.Subscribe<OnBackToLobbyChoosedSignal>(x => BackToLobby());
+        signalBus.Subscribe<OnNewGameChoosedSignal>(x => StartNewGame());
+        signalBus.Subscribe<OnJoinedTableSignal>(x => PlayerJoinedTable(x.TableData));
+        signalBus.Subscribe<OnACardPlayedSignal>(x => ACardPlayed(x.Card, x.User));
     }
-    
-    private void OnDestroy()
-    {
-        SaloonManager.OnJoinedTable -= PlayerJoinedTable;
-        OnACardPlayed -= ACardPlayed;
-        OptionsMenu.OnBackToLobbyChoosed -= BackToLobby;
-        OptionsMenu.OnNewGameChoosed -= StartNewGame;
-    }
-
+   
     private void PlayerJoinedTable(TableData tableData)
     {
         this.tableData = tableData;

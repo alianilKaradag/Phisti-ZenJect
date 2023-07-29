@@ -15,30 +15,21 @@ public class CameraManager : MonoBehaviour
    
     [SerializeField] private CameraType defaultCamera;
     [SerializeField] private CinemachineVirtualCamera[] cameras;
-    private Camera mainCamera;
+    
+    [Inject(Id = "Main")]private Camera mainCamera;
+    [Inject]private SignalBus signalBus;
 
     public CinemachineVirtualCamera CurrentCamera { get; private set; }
 
     private CameraType currentCameraType,previousCamera;
     private CinemachineBasicMultiChannelPerlin currentShake;
 
-    
-    [Inject]
-    public void Construct([Inject(Id = "Main")] Camera mainCamera)
-    {
-        this.mainCamera = mainCamera;
-    }
-    
+   
     private void Start()
     {
         previousCamera = defaultCamera;
         ChangeCamera(defaultCamera);
-        OptionsMenu.OnBackToLobbyChoosed += BackToLobby;
-    }
-
-    private void OnDestroy()
-    {
-        OptionsMenu.OnBackToLobbyChoosed -= BackToLobby;
+        signalBus.Subscribe<OnBackToLobbyChoosedSignal>(x => BackToLobby());
     }
 
     private void UpdateCurrentCamera()

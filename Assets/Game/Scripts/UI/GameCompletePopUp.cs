@@ -3,6 +3,7 @@ using NaughtyAttributes;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
 
 public class GameCompletePopUp : MonoBehaviour
 {
@@ -18,7 +19,8 @@ public class GameCompletePopUp : MonoBehaviour
    [SerializeField, Foldout("Setup")] private Sprite lostSprite;
    [SerializeField, Foldout("Setup")] private Color winColor;
    [SerializeField, Foldout("Setup")] private Color lostColor;
-   
+
+   [Inject] private SignalBus signalBus;
 
    private Tween fadeTween;
    private Tween scaleTween;
@@ -30,16 +32,10 @@ public class GameCompletePopUp : MonoBehaviour
       canvasGroup.alpha = 0f;
       canvasGroup.interactable = false;
 
-      OptionsMenu.OnBackToLobbyChoosed += Close;
-      OptionsMenu.OnNewGameChoosed += Close;
+      signalBus.Subscribe<OnNewGameChoosedSignal>(x => Close());
+      signalBus.Subscribe<OnBackToLobbyChoosedSignal>(x => Close());
    }
-
-   private void OnDestroy()
-   {
-      OptionsMenu.OnBackToLobbyChoosed -= Close;
-      OptionsMenu.OnNewGameChoosed -= Close;
-   }
-
+    
    public void SetValues(string name, int betAmount, bool didPlayerWin)
    {
       winnerNameText.text = name;

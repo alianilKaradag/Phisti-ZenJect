@@ -14,17 +14,13 @@ public class SaloonController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI betText;
     [SerializeField] private Button playButton;
 
-    private DataManager dataManager;
-    private SaloonManager saloonManager;
+    [Inject]private DataManager dataManager;
+    [Inject]private SaloonManager saloonManager;
+    [Inject]private SignalBus signalBus;
+    
     private int minBet;
     private int maxBet;
     
-    [Inject]
-    public void Construct(DataManager dataManager, SaloonManager saloonManager)
-    {
-        this.dataManager = dataManager;
-        this.saloonManager = saloonManager;
-    }
     private void Awake()
     {
         SetValues();
@@ -32,13 +28,9 @@ public class SaloonController : MonoBehaviour
 
     private void Start()
     {
-        ScrollManager.OnEnable += CheckMoneyForTable;
+        signalBus.Subscribe<OnEnableScrollPanelSignal>(x => CheckMoneyForTable());
     }
 
-    private void OnDestroy()
-    {
-        ScrollManager.OnEnable -= CheckMoneyForTable;
-    }
 
     private void CheckMoneyForTable()
     {
@@ -64,11 +56,11 @@ public class SaloonController : MonoBehaviour
     public void OnPlayButtonClicked()
     {
         var tableData = new TableData(saloonType, 2, minBet);
-        SaloonManager.OnJoinedTable?.Invoke(tableData);
+        signalBus.TryFire(new OnJoinedTableSignal(tableData));
     }
 
     public void OnCreateClicked()
     {
-        SaloonManager.OnGameSaloonCreateSelected?.Invoke(saloonType, minBet, maxBet);
+        signalBus.TryFire(new OnGameSaloonCreationSelectedSignal(saloonType, minBet, maxBet));
     }
 }

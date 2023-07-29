@@ -4,14 +4,16 @@ using DG.Tweening;
 using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.Events;
+using Zenject;
 
 public class ScrollManager : MonoBehaviour
 {
-   public static UnityAction OnEnable;
    [SerializeField, Foldout("Settings")] private float appearDuration;
    [SerializeField, Foldout("Settings")] private float disappearDuration;
    
    [SerializeField, Foldout("Setup")] private CanvasGroup canvasGroup;
+
+   [Inject] private SignalBus signalBus;
 
    private Tween fadeTween;
    private bool isOpen = true;
@@ -19,15 +21,10 @@ public class ScrollManager : MonoBehaviour
    private IEnumerator Start()
    {
       canvasGroup.alpha = 1f;
-      OptionsMenu.OnBackToLobbyChoosed += BackToLobby;
+      signalBus.Subscribe<OnBackToLobbyChoosedSignal>(x => BackToLobby());
 
       yield return new WaitForSeconds(0.1f);
-      OnEnable?.Invoke();
-   }
-
-   private void OnDestroy()
-   {
-      OptionsMenu.OnBackToLobbyChoosed -= BackToLobby;
+      signalBus.TryFire(new OnEnableScrollPanelSignal());
    }
 
    public void Open()
@@ -36,7 +33,7 @@ public class ScrollManager : MonoBehaviour
 
       KillFadeTween();
       isOpen = true;
-      OnEnable?.Invoke();
+      signalBus.TryFire(new OnEnableScrollPanelSignal());
       canvasGroup.blocksRaycasts = true;
       fadeTween = canvasGroup.DOFade(1f, appearDuration).SetEase(Ease.InQuint);
    }

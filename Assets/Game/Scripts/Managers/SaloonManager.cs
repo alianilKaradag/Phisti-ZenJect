@@ -14,42 +14,22 @@ public enum SaloonType
 
 public class SaloonManager : MonoBehaviour
 {
-    public static UnityAction<TableData> OnJoinedTable;
-    public static UnityAction<SaloonType, int, int> OnGameSaloonCreateSelected;
-    public static UnityAction OnGameSaloonCreationCanceled;
+    [Inject] private CameraManager cameraManager;
+    [Inject] private SaloonCreator saloonCreator;
+    [Inject] private ScrollManager scrollManager;
+    [Inject] private OptionsMenu optionsMenu;
+    [Inject] private PlayerInfoArea playerInfoArea;
+    [Inject] private SaloonTypeValues saloonTypeValues;
+    [Inject] private SignalBus signalBus;
     
     private TableData tableData;
     private SaloonType currentSaloonType;
-    private SaloonTypeValues saloonTypeValues;
-    private CameraManager cameraManager;
-    private SaloonCreator saloonCreator;
-    private ScrollManager scrollManager;
-    private OptionsMenu optionsMenu;
-    private PlayerInfoArea playerInfoArea;
-
-    [Inject]
-    public void Construct(CameraManager cameraManager, SaloonCreator saloonCreator, ScrollManager scrollManager, OptionsMenu optionsMenu, PlayerInfoArea playerInfoArea, SaloonTypeValues saloonTypeValues)
-    {
-        this.cameraManager = cameraManager;
-        this.saloonCreator = saloonCreator;
-        this.scrollManager = scrollManager;
-        this.optionsMenu = optionsMenu;
-        this.playerInfoArea = playerInfoArea;
-        this.saloonTypeValues = saloonTypeValues;
-    }
     
     private void Awake()
     {
-        OnGameSaloonCreateSelected += CreateSaloonSelected;
-        OnJoinedTable += JoinedTable;
-        OnGameSaloonCreationCanceled += SaloonCreationCanceled;
-    }
-
-    private void OnDestroy()
-    {
-        OnGameSaloonCreateSelected -= CreateSaloonSelected;
-        OnJoinedTable -= JoinedTable;
-        OnGameSaloonCreationCanceled -= SaloonCreationCanceled;
+        signalBus.Subscribe<OnGameSaloonCreationSelectedSignal>(x => CreateSaloonSelected(x.SaloonType, x.MinBet, x.MaxBet));
+        signalBus.Subscribe<OnJoinedTableSignal>( x => JoinedTable(x.TableData));
+        signalBus.Subscribe<OnGameSaloonCreationCanceledSignal>(x => SaloonCreationCanceled());
     }
 
     public List<int> GetSaloonValues(SaloonType saloonType)
@@ -82,7 +62,7 @@ public class SaloonManager : MonoBehaviour
         saloonCreator.OpenCreateTable(saloonType, minBet, maxBet);
     }
 
-    private void JoinedTable(TableData tableData)
+    public void JoinedTable(TableData tableData)
     {
         this.tableData = tableData;
         playerInfoArea.Close();

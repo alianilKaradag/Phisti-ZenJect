@@ -10,6 +10,7 @@ public class SceneInstaller : MonoInstaller<SceneInstaller>
         BindNonMonoBehaviourManagers();
         BindFactories();
         BindMonoBehaviourManagers();
+        BindSignals();
     }
     
     private void BindNonMonoBehaviourManagers()
@@ -44,6 +45,21 @@ public class SceneInstaller : MonoInstaller<SceneInstaller>
         Container.Bind<OptionsMenu>().FromComponentsInHierarchy().AsSingle();
         Container.Bind<PlayerInfoArea>().FromComponentsInHierarchy().AsSingle();
         Container.Bind<UserProfilePopUp>().FromComponentsInHierarchy().AsSingle();
+
+    }
+
+    private void BindSignals()
+    {
+        SignalBusInstaller.Install(Container);
+        
+        Container.DeclareSignal<OnACardPlayedSignal>();
+        Container.DeclareSignal<OnJoinedTableSignal>();
+        Container.DeclareSignal<OnGameSaloonCreationSelectedSignal>();
+        Container.DeclareSignal<OnGameSaloonCreationCanceledSignal>();
+        Container.DeclareSignal<OnClickedConfirmationButtonSignal>();
+        Container.DeclareSignal<OnNewGameChoosedSignal>();
+        Container.DeclareSignal<OnBackToLobbyChoosedSignal>();
+        Container.DeclareSignal<OnEnableScrollPanelSignal>();
 
     }
 }

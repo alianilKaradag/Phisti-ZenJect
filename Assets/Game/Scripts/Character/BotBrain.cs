@@ -8,33 +8,23 @@ using UnityEngine;
 using Zenject;
 using Random = UnityEngine.Random;
 
+[RequireComponent(typeof(CharacterController))]
 public class BotBrain : MonoBehaviour
 {
     [SerializeField] private CharacterController user;
 
+    [Inject]private BoardManager boardManager;
+    [Inject]private SignalBus signalBus;
+    
     private Coroutine decisionRoutine;
-    private BoardManager boardManager;
-
-    [Inject]
-    public void Construct(BoardManager boardManager)
-    {
-        this.boardManager = boardManager;
-    }
+    
     private void Start()
     {
-        user.OnMyTurn += MakeADecision;
-        OptionsMenu.OnBackToLobbyChoosed += Reset;
-        OptionsMenu.OnNewGameChoosed += Reset;
+        signalBus.Subscribe<OnBackToLobbyChoosedSignal>(x => Reset());
+        signalBus.Subscribe<OnNewGameChoosedSignal>( x=> Reset());
     }
 
-    private void OnDestroy()
-    {
-        user.OnMyTurn -= MakeADecision;
-        OptionsMenu.OnBackToLobbyChoosed -= Reset;
-        OptionsMenu.OnNewGameChoosed -= Reset;
-    }
-
-    private void MakeADecision(Card lastCardOnTheTable)
+    public void MakeADecision(Card lastCardOnTheTable)
     {
         decisionRoutine = StartCoroutine(DecisionRoutine(lastCardOnTheTable));
     }

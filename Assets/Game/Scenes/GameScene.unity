@@ -9289,6 +9289,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CardsOnHand: []
   isPlayer: 1
+  botBrain: {fileID: 0}
   visual: {fileID: 2083960651}
   cardFirstDestination: {fileID: 2049263799}
   cardPoints:

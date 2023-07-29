@@ -3,16 +3,16 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using Zenject;
 
 public class ConfirmationPopUp : MonoBehaviour
 {
-    public Action<bool> OnClickedConfirmationButton;
-    
     [SerializeField] private Transform contents;
-
     [SerializeField] private Button acceptBtn;
     [SerializeField] private Button refuseBtn;
 
+    [Inject] private SignalBus signalBus;
+    
     private Tween scaleTween;
     private bool isOpen;
     
@@ -58,13 +58,13 @@ public class ConfirmationPopUp : MonoBehaviour
     public void OnAcceptClicked()
     {
         Close();
-        OnClickedConfirmationButton?.Invoke(true);
+        signalBus.TryFire(new OnClickedConfirmationButtonSignal(true));
     }
     
     public void OnRefuseClicked()
     {
         Close();
-        OnClickedConfirmationButton?.Invoke(false);
+        signalBus.TryFire(new OnClickedConfirmationButtonSignal(false));
     }
 
     private void KillTweens()

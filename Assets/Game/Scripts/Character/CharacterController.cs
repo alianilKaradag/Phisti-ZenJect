@@ -11,42 +11,35 @@ using Zenject;
 
 public class CharacterController : MonoBehaviour
 {
-    public UnityAction<Card> OnMyTurn;
-
     public List<Card> GainedCards { get; private set; } = new List<Card>();
     public List<Card> Phistis { get; private set; } = new List<Card>();
-
     public List<Transform> CardPoints => cardPoints;
-
     public List<Card> CardsOnHand;
-
     public Transform CardFirstDestination => cardFirstDestination;
-    public bool IsMyTurn { get; private set; }
-    public bool IsPlayer => isPlayer;
     public UserInfoData UserData => userData;
+    public bool IsMyTurn { get; private set; }
+
 
     [SerializeField, Foldout("Settings")] private bool isPlayer;
 
+    [SerializeField, Foldout("Setup"), HideIf("isPlayer")]
+    private BotBrain botBrain;
+
     [SerializeField, Foldout("Setup")] private Transform visual;
     [SerializeField, Foldout("Setup")] private Transform cardFirstDestination;
-    [SerializeField, Foldout("Setup"), ReorderableList] private List<Transform> cardPoints;
+
+    [SerializeField, Foldout("Setup"), ReorderableList]
+    private List<Transform> cardPoints;
+
     [SerializeField, Foldout("Setup")] private UserInfo userInfo;
 
-    private UserInfoData userData;
-    
-    private BoardManager boardManager;
-    private CharacterManager characterManager;
-    private DataManager dataManager;
-    private PlayerInfoArea playerInfoArea;
+    [Inject] private BoardManager boardManager;
+    [Inject] private CharacterManager characterManager;
+    [Inject] private DataManager dataManager;
+    [Inject] private PlayerInfoArea playerInfoArea;
+    [Inject] private SignalBus signalBus;
 
-    [Inject]
-    public void Construct(BoardManager boardManager, CharacterManager characterManager, DataManager dataManager, PlayerInfoArea playerInfoArea)
-    {
-        this.boardManager = boardManager;
-        this.characterManager = characterManager;
-        this.dataManager = dataManager;
-        this.playerInfoArea = playerInfoArea;
-    }
+    private UserInfoData userData;
 
     public void SetAsUser(bool isOpen)
     {
@@ -92,7 +85,11 @@ public class CharacterController : MonoBehaviour
     public void MyTurn([CanBeNull] Card lastCard)
     {
         IsMyTurn = true;
-        OnMyTurn?.Invoke(lastCard);
+
+        if (!isPlayer)
+        {
+            botBrain.MakeADecision(lastCard);
+        }
     }
 
     public void PlayCard(Card card)
@@ -100,7 +97,7 @@ public class CharacterController : MonoBehaviour
         boardManager.AddPlayedCard(card.CardValue);
         var yPos = 0f;
         var destinationPoint = boardManager.GetThrowPoint(out yPos);
-        card.Play(destinationPoint, yPos, true, () => BoardManager.OnACardPlayed?.Invoke(card, this));
+        card.Play(destinationPoint, yPos, true, () => signalBus.TryFire(new OnACardPlayedSignal(card, this)));
         CardsOnHand.Remove(card);
         IsMyTurn = false;
     }
@@ -110,13 +107,13 @@ public class CharacterController : MonoBehaviour
         var winAmount = userData.WinAmount;
         var lostAmount = userData.LostAmount;
         var money = userData.MoneyAmount;
-        
+
         if (winner == this)
         {
             if (isPlayer)
             {
                 dataManager.IncreaseWinAmount();
-                dataManager.UpdateMoney(betAmount * (saloonSize -1));
+                dataManager.UpdateMoney(betAmount * (saloonSize - 1));
                 //SaveData.WinAmount++;
                 //SaveData.PlayerTotalMoney += betAmount;
             }
@@ -159,7 +156,7 @@ public class CharacterController : MonoBehaviour
 
         CardsOnHand.Clear();
     }
-    
+
     private void DestroyGainedCards()
     {
         foreach (var card in GainedCards)
@@ -169,7 +166,7 @@ public class CharacterController : MonoBehaviour
 
         GainedCards.Clear();
     }
-    
+
     private void DestroyPhistis()
     {
         foreach (var card in Phistis)

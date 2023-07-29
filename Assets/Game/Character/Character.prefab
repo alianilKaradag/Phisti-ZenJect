@@ -234,7 +234,7 @@ Transform:
   m_Children:
   - {fileID: 127878949663923886}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3137058907346606682
 MonoBehaviour:
@@ -263,6 +263,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CardsOnHand: []
   isPlayer: 0
+  botBrain: {fileID: 3137058907346606682}
   visual: {fileID: 127878949663923886}
   cardFirstDestination: {fileID: 235322635275958451}
   cardPoints:
@@ -412,6 +413,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
+  m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
@@ -659,6 +661,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 2
     m_TransformParent: {fileID: 482255905773887172}
     m_Modifications:
     - target: {fileID: 5493598772556763839, guid: 0f963eb9493ae4ed2bf24e439232bb34, type: 3}
@@ -758,6 +761,7 @@ PrefabInstance:
       value: 0.05
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_AddedGameObjects: []
   m_SourcePrefab: {fileID: 100100000, guid: 0f963eb9493ae4ed2bf24e439232bb34, type: 3}
 --- !u!224 &3220695011561700563 stripped
 RectTransform:
