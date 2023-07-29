@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: PlayerData
   m_EditorClassIdentifier: 
   WinAmount: 15
-  LostAmount: 81
-  playerTotalMoney: 895500
+  LostAmount: 83
+  playerTotalMoney: 895000
